@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Instagram,
   Youtube,
@@ -15,6 +17,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import SectionHeader from "./SectionHeader";
+import { useTranslation } from "@/lib/i18n";
 
 const platforms = [
   { name: "Facebook", icon: <Facebook className="h-8 w-8" style={{ color: "#1877F2" }} /> },
@@ -42,11 +45,13 @@ const platforms = [
 ];
 
 export default function PlatformGrid() {
+  const { t } = useTranslation();
+
   return (
     <section className="w-full max-w-[1152px] mx-auto px-4 md:px-8 lg:px-0">
       <SectionHeader
-        title="All Your Favorite Platforms in One Place"
-        subtitle="Access a wide range of social media download options with a single tool designed for convenience and flexibility."
+        title={t("platformGrid.title")}
+        subtitle={t("platformGrid.subtitle")}
         subtitleWidth="max-w-[381px]"
       />
 

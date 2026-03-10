@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/lib/i18n";
 
 interface UrlInputProps {
   onSubmit: (url: string) => void;
@@ -35,6 +36,7 @@ function normalizeUrl(raw: string): string {
 
 export default function UrlInput({ onSubmit, isLoading = false, initialValue = "" }: UrlInputProps) {
   const [url, setUrl] = useState(initialValue);
+  const { t } = useTranslation();
 
   // Keep in sync when parent changes initialValue (e.g. query-param redirect)
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function UrlInput({ onSubmit, isLoading = false, initialValue = "
         type="text"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-        placeholder="Paste url link here..."
+        placeholder={t("input.placeholder")}
         className="flex-1 h-[52px] rounded-full border border-border bg-card px-4 text-base font-medium text-foreground placeholder:text-muted outline-none focus:border-primary transition-colors"
       />
       <button
@@ -85,10 +87,10 @@ export default function UrlInput({ onSubmit, isLoading = false, initialValue = "
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
               />
             </svg>
-            <span>Processing</span>
+            <span>{t("input.processing")}</span>
           </div>
         ) : (
-          "Download"
+          t("input.download")
         )}
       </button>
     </form>

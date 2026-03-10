@@ -1,45 +1,44 @@
+"use client";
+
 import { Copy, ClipboardPaste, Download } from "lucide-react";
 import SectionHeader from "./SectionHeader";
+import { useTranslation } from "@/lib/i18n";
 
-const steps = [
-  {
-    num: 1,
-    icon: <Copy className="h-6 w-6 text-primary" />,
-    title: "Copy the Link",
-    bullets: [
-      "Open your preferred social media platform.",
-      "Find the content you want to download.",
-      "Copy the URL from the share option.",
-    ],
-  },
-  {
-    num: 2,
-    icon: <ClipboardPaste className="h-6 w-6 text-primary" />,
-    title: "Paste the Link",
-    bullets: [
-      "Paste the copied link into the input field",
-      "Click the download button",
-      "Wait a few seconds for processing",
-    ],
-  },
-  {
-    num: 3,
-    icon: <Download className="h-6 w-6 text-primary" />,
-    title: "Download Instantly",
-    bullets: [
-      "Preview the available formats or quality options",
-      "Select your preferred version",
-      "Save the file directly to your device",
-    ],
-  },
+const stepIcons = [
+  <Copy key="copy" className="h-6 w-6 text-primary" />,
+  <ClipboardPaste key="paste" className="h-6 w-6 text-primary" />,
+  <Download key="download" className="h-6 w-6 text-primary" />,
 ];
 
 export default function HowItWorks() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      num: 1,
+      icon: stepIcons[0],
+      title: t("howItWorks.step1Title"),
+      bullets: [t("howItWorks.step1_1"), t("howItWorks.step1_2"), t("howItWorks.step1_3")],
+    },
+    {
+      num: 2,
+      icon: stepIcons[1],
+      title: t("howItWorks.step2Title"),
+      bullets: [t("howItWorks.step2_1"), t("howItWorks.step2_2"), t("howItWorks.step2_3")],
+    },
+    {
+      num: 3,
+      icon: stepIcons[2],
+      title: t("howItWorks.step3Title"),
+      bullets: [t("howItWorks.step3_1"), t("howItWorks.step3_2"), t("howItWorks.step3_3")],
+    },
+  ];
+
   return (
     <section className="w-full max-w-[1152px] mx-auto px-4 md:px-8 lg:px-0">
       <SectionHeader
-        title="Download in 3 Simple Steps"
-        subtitle="Follow a few quick steps to download your favorite content directly to your device."
+        title={t("howItWorks.title")}
+        subtitle={t("howItWorks.subtitle")}
         subtitleWidth="max-w-[340px]"
       />
 

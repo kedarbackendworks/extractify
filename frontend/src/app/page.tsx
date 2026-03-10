@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import UrlInput from "@/components/UrlInput";
 import ContentPreview from "@/components/ContentPreview";
 import { detectContentTab } from "@/lib/url-tab-detect";
+import { useTranslation } from "@/lib/i18n";
 import HowItWorks from "@/components/sections/HowItWorks";
 import PlatformOverview from "@/components/sections/PlatformOverview";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
@@ -21,7 +22,8 @@ import ReviewForm from "@/components/sections/ReviewForm";
 
 export default function Home() {
   const router = useRouter();
-  const [, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleUrlSubmit = (url: string) => {
     setIsLoading(true);
@@ -84,17 +86,16 @@ export default function Home() {
       <div className="flex flex-col items-center px-4 md:px-8 pt-16 md:pt-20 pb-20 md:pb-24">
         <div className="flex flex-col items-center gap-3 max-w-[855px] mb-10">
           <h1 className="text-[28px] md:text-[32px] font-semibold text-foreground text-center leading-tight">
-            Download Anything from Your Favorite Social Platforms
+            {t("hero.title")}
           </h1>
           <p className="text-text-secondary text-lg md:text-xl font-medium text-center max-w-[431px] leading-7">
-            Access high-quality downloads from multiple platforms by simply
-            pasting your URL.
+            {t("hero.subtitle")}
           </p>
         </div>
 
         {/* URL Input */}
         <div className="mb-6">
-          <UrlInput onSubmit={handleUrlSubmit} />
+          <UrlInput onSubmit={handleUrlSubmit} isLoading={isLoading} />
         </div>
 
         {/* Content Preview Placeholder */}

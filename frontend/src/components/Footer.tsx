@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "@/lib/i18n";
 
 const platformLinks = [
   { name: "Instagram", href: "/platform/instagram" },
@@ -11,18 +14,20 @@ const platformLinks = [
   { name: "Pinterest", href: "/platform/pinterest" },
 ];
 
-const resourceLinks = [
-  { name: "Blog", href: "/blogs" },
-  { name: "FAQ", href: "/#faq" },
-  { name: "Reviews", href: "/#reviews" },
+const resourceKeys = [
+  { nameKey: "footer.blog", href: "/blogs" },
+  { nameKey: "footer.faq", href: "/#faq" },
+  { nameKey: "footer.reviews", href: "/#reviews" },
 ];
 
-const legalLinks = [
-  { name: "Privacy Policy", href: "/privacy" },
-  { name: "Terms of Service", href: "/terms" },
+const legalKeys = [
+  { nameKey: "footer.privacy", href: "/privacy" },
+  { nameKey: "footer.terms", href: "/terms" },
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="w-full bg-[#1a1a2e] text-white">
       <div className="mx-auto max-w-[1068px] px-6 py-14">
@@ -33,9 +38,7 @@ export default function Footer() {
               Extractify
             </h3>
             <p className="text-[14px] leading-[24px] text-gray-400">
-              Download content from your favorite social media platforms
-              quickly and easily. Free, fast, and secure — no sign-up
-              required.
+              {t("footer.description")}
             </p>
             {/* Social icons */}
             <div className="flex gap-3 mt-5">
@@ -55,7 +58,7 @@ export default function Footer() {
           {/* Platforms */}
           <div>
             <h4 className="text-[14px] font-semibold text-white mb-4 uppercase tracking-wide">
-              Platforms
+              {t("footer.platforms")}
             </h4>
             <ul className="space-y-2">
               {platformLinks.map((l) => (
@@ -74,16 +77,16 @@ export default function Footer() {
           {/* Resources */}
           <div>
             <h4 className="text-[14px] font-semibold text-white mb-4 uppercase tracking-wide">
-              Resources
+              {t("footer.resources")}
             </h4>
             <ul className="space-y-2">
-              {resourceLinks.map((l) => (
-                <li key={l.name}>
+              {resourceKeys.map((l) => (
+                <li key={l.nameKey}>
                   <Link
                     href={l.href}
                     className="text-[14px] text-gray-400 hover:text-white transition-colors"
                   >
-                    {l.name}
+                    {t(l.nameKey)}
                   </Link>
                 </li>
               ))}
@@ -93,16 +96,16 @@ export default function Footer() {
           {/* Legal */}
           <div>
             <h4 className="text-[14px] font-semibold text-white mb-4 uppercase tracking-wide">
-              Legal
+              {t("footer.legal")}
             </h4>
             <ul className="space-y-2">
-              {legalLinks.map((l) => (
-                <li key={l.name}>
+              {legalKeys.map((l) => (
+                <li key={l.nameKey}>
                   <Link
                     href={l.href}
                     className="text-[14px] text-gray-400 hover:text-white transition-colors"
                   >
-                    {l.name}
+                    {t(l.nameKey)}
                   </Link>
                 </li>
               ))}
@@ -113,10 +116,10 @@ export default function Footer() {
         {/* Divider + Copyright */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-[13px] text-gray-500">
-            © {new Date().getFullYear()} Extractify. All rights reserved.
+            © {new Date().getFullYear()} Extractify. {t("footer.rights")}
           </p>
           <p className="text-[13px] text-gray-500">
-            Made with care for content creators worldwide.
+            {t("footer.madeWith")}
           </p>
         </div>
       </div>

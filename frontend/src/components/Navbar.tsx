@@ -4,10 +4,14 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { socialPlatforms, documentPlatforms } from "@/lib/platforms";
+import { useTranslation, localeConfig, type Locale } from "@/lib/i18n";
 
 export default function Navbar() {
   const [platformsOpen, setPlatformsOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
+  const { t, locale, setLocale } = useTranslation();
 
   // Close on outside click
   useEffect(() => {
@@ -18,6 +22,12 @@ export default function Navbar() {
       ) {
         setPlatformsOpen(false);
       }
+      if (
+        langRef.current &&
+        !langRef.current.contains(e.target as Node)
+      ) {
+        setLangOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -25,7 +35,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-primary-light shadow-[0px_1px_6px_0px_rgba(170,170,170,0.25)]">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-8 md:px-16 py-5">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 md:px-16 py-5">
         {/* Logo */}
         <Link href="/" className="text-primary font-bold text-[32px] leading-none">
           Logo
@@ -37,27 +47,51 @@ export default function Navbar() {
             href="/blogs"
             className="hidden md:flex items-center justify-center rounded-full py-2 text-foreground text-base font-medium hover:text-primary transition-colors"
           >
-            Blogs
+            {t("nav.blogs")}
           </Link>
           <Link
             href="/#faq"
             className="hidden md:flex items-center justify-center rounded-full py-2 text-foreground text-base font-medium hover:text-primary transition-colors"
           >
-            FAQ
+            {t("nav.faq")}
           </Link>
           <Link
             href="/#reviews"
             className="hidden md:flex items-center justify-center rounded-full py-2 text-foreground text-base font-medium hover:text-primary transition-colors"
           >
-            Review
+            {t("nav.review")}
           </Link>
 
           <div className="flex items-center gap-3">
             {/* Language selector */}
-            <button className="flex items-center justify-center gap-2 rounded-full border border-border bg-card px-3 py-2">
-              <span className="text-lg">🇺🇸</span>
-              <span className="text-foreground text-lg font-semibold">EN</span>
-            </button>
+            <div className="relative" ref={langRef}>
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center justify-center gap-2 rounded-full border border-border bg-card px-2.5 py-2 sm:px-3"
+              >
+                <span className="text-lg">{localeConfig[locale].flag}</span>
+                <span className="text-foreground text-base sm:text-lg font-semibold">{localeConfig[locale].label}</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${langOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {langOpen && (
+                <div className="absolute right-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] max-h-[70vh] overflow-y-auto overscroll-contain rounded-xl border border-border bg-card py-2 shadow-lg sm:w-56">
+                  {(Object.keys(localeConfig) as Locale[]).map((code) => (
+                    <button
+                      key={code}
+                      onClick={() => { setLocale(code); setLangOpen(false); }}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm font-medium transition-colors hover:bg-background sm:gap-3 sm:px-4 ${
+                        locale === code ? "text-primary bg-background" : "text-foreground"
+                      }`}
+                    >
+                      <span className="text-lg">{localeConfig[code].flag}</span>
+                      <span className="truncate text-left">{localeConfig[code].nativeName}</span>
+                      <span className="ml-auto text-xs text-muted">{localeConfig[code].label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Platforms dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -65,19 +99,19 @@ export default function Navbar() {
                 onClick={() => setPlatformsOpen(!platformsOpen)}
                 className="flex items-center gap-1 rounded-full border border-border bg-card px-4 py-2 text-foreground text-base font-medium hover:border-primary transition-colors"
               >
-                Platforms
+                {t("nav.platforms")}
                 <ChevronDown
                   className={`h-5 w-5 transition-transform ${platformsOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
               {platformsOpen && (
-                <div className="absolute right-0 top-full mt-2 w-[520px] rounded-2xl border border-border bg-card p-5 shadow-lg">
+                <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[520px] rounded-2xl border border-border bg-card p-5 shadow-lg">
                   {/* Social Media */}
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
-                    Social Media
+                    {t("nav.socialMedia")}
                   </p>
-                  <div className="grid grid-cols-3 gap-x-4 gap-y-1 mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mb-4">
                     {socialPlatforms.map((p) => (
                       <Link
                         key={p.slug}
@@ -98,9 +132,9 @@ export default function Navbar() {
 
                   {/* Document Platforms */}
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
-                    Documents &amp; Publications
+                    {t("nav.documents")}
                   </p>
-                  <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
                     {documentPlatforms.map((p) => (
                       <Link
                         key={p.slug}
