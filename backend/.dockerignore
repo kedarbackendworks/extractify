@@ -16,6 +16,8 @@ build/
 .coverage
 htmlcov/
 *.log
+*_cookies.txt
+*.cookies.txt
 debug_*.html
 test_*.py
 test_*.html
