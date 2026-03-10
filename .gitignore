@@ -1,0 +1,51 @@
+# ── Frontend (Next.js) ────────────────────────────────────────
+frontend/node_modules/
+frontend/.pnp
+frontend/.pnp.*
+frontend/.yarn/*
+!frontend/.yarn/patches
+!frontend/.yarn/plugins
+!frontend/.yarn/releases
+!frontend/.yarn/versions
+frontend/coverage/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# ── Backend (Python / FastAPI) ────────────────────────────────
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/**/*.pyc
+backend/.venv/
+backend/venv/
+backend/downloads/
+backend/*.egg-info/
+backend/dist/
+backend/build/
+backend/.mypy_cache/
+backend/.pytest_cache/
+
+# Sensitive cookie files — never commit these
+backend/*_cookies.txt
+backend/*.cookies.txt
+
+# Debug / test artifacts (may contain scraped page data)
+backend/debug_*.html
+backend/test_*_output.html
+backend/test_fb_output.html
+backend/oembed.json
+
+# ── Shared / OS ───────────────────────────────────────────────
+.DS_Store
+*.pem
+.env
+.env.*
+!.env.example

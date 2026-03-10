@@ -1,0 +1,30 @@
+services:
+  # ── MongoDB ──────────────────────────────────────
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # ── FastAPI Backend ──────────────────────────────
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file: ./backend/.env
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app      # hot reload in dev
+
+  # ── Next.js Frontend ─────────────────────────────
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  mongo_data:
