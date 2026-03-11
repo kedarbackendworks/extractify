@@ -77,42 +77,50 @@ class SnapchatScraper(BaseScraper):
         except Exception:
             return await self._scrape_profile(normalized, content_tab)
 
-    # ── Spotlight via yt-dlp ────────────────────────────────────────
+    # ── Spotlight via __NEXT_DATA__ ────────────────────────────────────────
     async def _scrape_spotlight(self, url: str) -> ScrapedResult:
-        info = await extract_with_ytdlp(url)
-        variants: List[ScrapedVariant] = []
-        for fmt in info.get("formats", []):
-            if not fmt.get("url"):
-                continue
-            if fmt.get("ext") in ("mhtml",):
-                continue
-            protocol = fmt.get("protocol", "")
-            if protocol not in ("https", "http", ""):
-                continue
-            has_video = fmt.get("vcodec") != "none"
-            has_audio = fmt.get("acodec") != "none"
-            height = fmt.get("height")
-            if has_video and has_audio:
-                label = f"{height}p" if height else fmt.get("format_note", "original")
-            elif has_audio and not has_video:
-                label = f"audio-{fmt.get('ext', 'webm')}"
-            elif has_video:
-                label = f"{height}p (video only)" if height else fmt.get("format_note", "original")
-            else:
-                continue
-            variants.append(ScrapedVariant(
-                label=label,
-                format=fmt.get("ext", "mp4"),
-                url=fmt["url"],
-                file_size_bytes=fmt.get("filesize") or fmt.get("filesize_approx"),
-                has_video=has_video,
-                has_audio=has_audio,
-            ))
+        props = await self._fetch_page_props(url)
+        
+        feed = props.get("spotlightFeed") or {}
+        stories = feed.get("spotlightStories") or []
+        
+        if not stories:
+            raise ValueError("Could not find this Spotlight video. It may be unavailable.")
+            
+        # Try to find the specific item by ID from URL
+        item = None
+        for story_item in stories:
+            story_id_obj = story_item.get("storyId") or {}
+            story_id = story_id_obj.get("value") if isinstance(story_id_obj, dict) else str(story_id_obj)
+            if story_id and story_id in url:
+                item = story_item
+                break
+                
+        # Fallback to the first item
+        if not item:
+            item = stories[0]
+            
+        metadata = item.get("metadata", {}).get("videoMetadata", {})
+        story = item.get("story", {})
+        snaps = story.get("snapList", [])
+        
+        if not snaps:
+            raise ValueError("No video found for this Spotlight.")
+            
+        creator = (metadata.get("creator") or {}).get("personCreator") or {}
+        author = creator.get("name") or creator.get("username")
+        
+        variants = self._snaps_to_variants(snaps, prefix="Spotlight")
+        if not variants:
+            raise ValueError("Could not extract media URLs for this Spotlight.")
+            
+        thumb = metadata.get("thumbnailUrl") or self._first_preview(snaps)
+        
         return ScrapedResult(
-            title=info.get("title", "Snapchat Spotlight"),
-            author=info.get("uploader"),
-            thumbnail_url=info.get("thumbnail"),
-            duration_seconds=info.get("duration"),
+            title=metadata.get("description") or metadata.get("name") or "Snapchat Spotlight",
+            author=author,
+            thumbnail_url=thumb,
+            duration_seconds=float(metadata.get("durationMs", 0)) / 1000 if metadata.get("durationMs") else None,
             content_type="short",
             variants=variants,
         )
@@ -332,7 +340,8 @@ class SnapchatScraper(BaseScraper):
         if len(media_urls) < 2:
             return None
         pipe_urls = "|".join(media_urls)
-        safe_title = re.sub(r'[^\w \-]', '', title.replace('\n', ' ').replace('\r', ''))[:80].strip() or "download"
+        safe_title_base = re.sub(r'[^\w \-]', '', str(title).replace('\n', ' ').replace('\r', ''))
+        safe_title = safe_title_base[:80].strip() or "download"
         merge_url = f"/api/download/merge?{urlencode({'urls': pipe_urls, 'filename': safe_title})}"
         return ScrapedVariant(
             label=f"{title} — Full Video (merged)",
