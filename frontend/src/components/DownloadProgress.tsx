@@ -25,10 +25,10 @@ export default function DownloadProgress({
   const progressPercent = downloadedBytes && totalBytes ? Math.min((downloadedBytes / totalBytes) * 100, 100) : 0;
 
   return (
-    <div className="flex items-center justify-center rounded-[12px] border border-border bg-card p-5">
-      <div className="flex flex-1 gap-3 items-start">
+    <div className="flex items-center justify-center rounded-[12px] border border-border bg-card p-3 sm:p-5">
+      <div className="flex flex-col sm:flex-row flex-1 gap-3 items-start">
         {/* Envelope icon */}
-        <div className="shrink-0 size-10 flex items-center justify-center">
+        <div className="shrink-0 size-10 flex items-center justify-center hidden sm:flex">
           <svg width="40" height="40" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="72" height="72" rx="8" fill="#F3F4F6" />
             <path d="M20 28L36 38L52 28V46C52 47.1 51.1 48 50 48H22C20.9 48 20 47.1 20 46V28Z" fill="#D1D5DB" />
@@ -39,8 +39,8 @@ export default function DownloadProgress({
         </div>
 
         {/* Content */}
-        <div className="flex flex-1 flex-col gap-3 items-start justify-center">
-          <p className="text-[16px] font-medium text-foreground whitespace-nowrap">
+        <div className="flex flex-1 flex-col gap-3 items-start justify-center w-full">
+          <p className="text-[14px] sm:text-[16px] font-medium text-foreground">
             Please wait ... Your file is getting ready in {elapsedSeconds} seconds
           </p>
 

@@ -54,18 +54,18 @@ export default function UrlInput({ onSubmit, isLoading = false, initialValue = "
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full max-w-[696px] gap-2 px-2">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row w-full max-w-[696px] gap-2 px-2">
       <input
         type="text"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         placeholder={t("input.placeholder")}
-        className="flex-1 h-[52px] rounded-[40px] border border-border bg-card px-4 text-[16px] font-medium text-foreground placeholder:text-muted outline-none focus:border-primary transition-colors"
+        className="w-full sm:flex-1 h-[52px] rounded-[40px] border border-border bg-card px-4 text-[16px] font-medium text-foreground placeholder:text-muted outline-none focus:border-primary transition-colors min-w-0"
       />
       <button
         type="submit"
         disabled={isLoading || !url.trim()}
-        className="flex items-center justify-center rounded-[33px] bg-primary px-4 h-[52px] text-white text-[16px] font-medium hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed shrink-0 gap-1"
+        className="flex items-center justify-center rounded-[33px] bg-primary px-4 h-[52px] text-white text-[16px] font-medium hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed shrink-0 gap-1 w-full sm:w-auto"
       >
         {isLoading ? (
           <div className="flex items-center gap-1">

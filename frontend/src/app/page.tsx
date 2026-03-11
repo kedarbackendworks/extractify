@@ -85,10 +85,10 @@ export default function Home() {
       {/* Hero section */}
       <div className="flex flex-col items-center px-4 md:px-8 pt-16 md:pt-20 pb-20 md:pb-24">
         <div className="flex flex-col items-center gap-3 max-w-[855px] mb-10 w-full">
-          <h1 className="text-[32px] font-semibold text-[#2D2D2D] text-center leading-normal w-full">
+          <h1 className="text-[24px] sm:text-[32px] font-semibold text-[#2D2D2D] text-center leading-normal w-full">
             {t("hero.title")}
           </h1>
-          <p className="text-text-secondary text-[20px] font-medium text-center max-w-[431px] leading-[28px]">
+          <p className="text-text-secondary text-[16px] sm:text-[20px] font-medium text-center max-w-[431px] leading-[24px] sm:leading-[28px]">
             {t("hero.subtitle")}
           </p>
         </div>

@@ -75,7 +75,7 @@ export default function Navbar() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-1rem))] max-h-[70vh] overflow-y-auto overscroll-contain rounded-xl border border-border bg-card py-2 shadow-lg sm:w-56">
+                <div className="fixed left-4 right-4 sm:absolute sm:left-auto sm:right-0 top-[72px] sm:top-full z-50 mt-0 sm:mt-2 max-h-[60vh] overflow-y-auto overscroll-contain rounded-xl border border-border bg-card py-2 shadow-lg sm:w-56">
                   {(Object.keys(localeConfig) as Locale[]).map((code) => (
                     <button
                       key={code}

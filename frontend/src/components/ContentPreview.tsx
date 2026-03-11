@@ -14,7 +14,7 @@ export default function ContentPreview({
   const { t } = useTranslation();
 
   return (
-    <div className="w-full max-w-[680px] min-h-[414px] rounded-[20px] border border-border bg-card overflow-hidden flex items-center justify-center">
+    <div className="w-full max-w-[680px] min-h-[280px] sm:min-h-[414px] rounded-[20px] border border-border bg-card overflow-hidden flex items-center justify-center">
       {isEmpty ? (
         <p className="text-muted text-base font-medium text-center px-4 max-w-[302px] leading-7">
           {t("preview.empty")}

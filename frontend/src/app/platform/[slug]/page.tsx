@@ -379,11 +379,11 @@ export default function PlatformPage({ params }: PlatformPageProps) {
       <div className="flex flex-col items-center gap-3 max-w-[855px] mb-10 w-full">
         <div className="flex items-center gap-3">
           <span className="shrink-0">{platform.icon}</span>
-          <h1 className="text-[32px] font-semibold text-foreground text-center leading-normal">
+          <h1 className="text-[24px] sm:text-[32px] font-semibold text-foreground text-center leading-normal">
             {platform.title}
           </h1>
         </div>
-        <p className="text-text-secondary text-[20px] font-medium text-center max-w-[431px] leading-[28px]">
+        <p className="text-text-secondary text-[16px] sm:text-[20px] font-medium text-center max-w-[431px] leading-[24px] sm:leading-[28px]">
           {platform.description}
         </p>
       </div>
