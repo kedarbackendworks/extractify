@@ -49,13 +49,40 @@ if settings.YTDLP_COOKIES_FILE:
 
 logger.info("ytdlp_helper_ready", has_pot_provider=True, has_proxy=bool(_proxy))
 
+import re
+_YT_RE = re.compile(r"(youtube\.com|youtu\.be)", re.IGNORECASE)
+
 
 def _extract_sync(url: str, extra_opts: dict | None = None) -> Dict[str, Any]:
     """Synchronous extraction (runs in thread pool)."""
     opts = {**_YDL_OPTS, **(extra_opts or {})}
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)
-        return ydl.sanitize_info(info)  # type: ignore[arg-type]
+        result = ydl.sanitize_info(info)  # type: ignore[arg-type]
+
+        # ── Diagnostic logging for YouTube ────────────────────────
+        if _YT_RE.search(url):
+            fmts = result.get("formats", [])
+            protocols = {}
+            for f in fmts:
+                p = f.get("protocol", "unknown")
+                protocols[p] = protocols.get(p, 0) + 1
+            https_count = sum(1 for f in fmts if f.get("protocol") in ("https", "http"))
+            sample = None
+            if fmts:
+                f0 = fmts[0]
+                sample = f"{f0.get('format_id')}|{f0.get('ext')}|{f0.get('protocol')}|{f0.get('vcodec','?')[:8]}"
+            logger.info(
+                "ytdlp_youtube_diag",
+                total_formats=len(fmts),
+                https_formats=https_count,
+                protocols=protocols,
+                sample=sample,
+                has_url=bool(result.get("url")),
+                title=str(result.get("title", ""))[:60],
+            )
+
+        return result
 
 
 async def extract_with_ytdlp(
