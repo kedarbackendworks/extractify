@@ -26,16 +26,6 @@ _YDL_OPTS: dict = {
     "socket_timeout": 10,               # 10s per socket op
     "extractor_retries": 2,             # retry on transient errors
     "ignore_no_formats_error": True,    # don't error on format selection
-
-    # ── bgutil PO Token provider ──────────────────────────────────
-    # The bgutil server (started by start.sh) runs on port 4416 and
-    # generates Proof of Origin tokens for YouTube requests.
-    # This bypasses YouTube's datacenter IP blocking without cookies.
-    "extractor_args": {
-        "youtube": {
-            "po_token": ["web+bgutil_sc"],
-        },
-    },
 }
 
 # ── Optional proxy ───────────────────────────────────────────────

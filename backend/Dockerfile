@@ -34,11 +34,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Node.js 22 LTS (required for bgutil PO Token server)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y --no-install-recommends nodejs && \
+    apt-get install -y --no-install-recommends nodejs git && \
     rm -rf /var/lib/apt/lists/*
 
-# Install bgutil PO Token provider (YouTube anti-bot bypass)
-RUN npm install -g bgutil-ytdlp-pot-provider
+# Build bgutil PO Token server (YouTube anti-bot bypass)
+# 1. Clone the provider repo + build the Node.js server
+# 2. Install the yt-dlp plugin via pip
+RUN git clone --single-branch --branch 1.3.1 \
+      https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git /opt/bgutil && \
+    cd /opt/bgutil/server && npm ci && npx tsc && \
+    pip install --no-cache-dir bgutil-ytdlp-pot-provider && \
+    chmod -R o+rx /opt/bgutil
 
 # Copy pre-built Python packages from builder stage
 COPY --from=builder /install /usr/local

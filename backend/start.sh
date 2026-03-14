@@ -10,7 +10,7 @@
 set -e
 
 echo "[start.sh] Starting bgutil PO Token server on port 4416..."
-npx --yes bgutil-ytdlp-pot-provider &
+node /opt/bgutil/server/build/main.js &
 BGUTIL_PID=$!
 
 # Give the Node.js server time to initialise
