@@ -122,21 +122,25 @@ def _is_profile_pic(url: str, width: int = 0, height: int = 0, *, story_context:
     low = url.lower()
     if "profile_pic" in low:
         return True
-    # Square-crop size indicator in CDN path (e.g. /s150x150/, /s640x640/, /s1080x1080/)
+    # Square-crop size indicator in CDN path — only small squares are profile pics.
+    # Large squares (640x640, 1080x1080) are legitimate post/story images.
     m = _SQUARE_SIZE_RE.search(low)
     if m and m.group(1) == m.group(2):
-        return True
+        dim = int(m.group(1))
+        if dim <= 320:
+            return True
     # Instagram CDN path segment for profile pictures
     if "/t51.2885-19/" in low:
         return True
     # Very small images are almost certainly avatars / thumbnails
     if width and height and max(width, height) < 400:
         return True
-    # In story context, approximately-square images are profile pictures
-    # (stories are always portrait 9:16; legitimate story images have height >> width)
+    # In story context, small approximately-square images are profile pictures.
+    # Large squares (640x640, 1080x1080) can be legitimate story content —
+    # not all stories are portrait 9:16.  Only flag small ones.
     if story_context and width and height:
         ratio = width / height
-        if 0.8 <= ratio <= 1.25:
+        if 0.8 <= ratio <= 1.25 and max(width, height) <= 500:
             return True
     return False
 
@@ -360,7 +364,7 @@ class InstagramScraper(BaseScraper):
     # ─────────────────────────────────────────────────────────────
 
     async def _try_media_info_api(
-        self, media_id: str, author: Optional[str] = None,
+        self, media_id: str, author: Optional[str] = None, *, is_story: bool = True,
     ) -> Optional[ScrapedResult]:
         """Query /api/v1/media/{id}/info/ with session cookies."""
         cookies = _get_ig_cookies()
@@ -384,11 +388,58 @@ class InstagramScraper(BaseScraper):
                 item = items[0]
                 pp_name = _user_pp_filename(item)
 
-                # If this story reshares another post, prefer the inner media
-                inner = self._extract_inner_story_media(item)
-                is_direct = inner is None
-                if inner:
-                    item = inner
+                # ── Carousel post (multiple images/videos) ──────────
+                carousel_media = item.get("carousel_media", [])
+                if not is_story and carousel_media:
+                    variants: list[ScrapedVariant] = []
+                    thumbnail = None
+                    for idx, cm in enumerate(carousel_media, 1):
+                        # Video in carousel
+                        for vid in cm.get("video_versions", []):
+                            if vid.get("url"):
+                                h = vid.get("height", 0)
+                                variants.append(ScrapedVariant(
+                                    label=f"Video {idx}" + (f" {h}p" if h else ""),
+                                    format="mp4", url=vid["url"],
+                                    has_video=True, has_audio=True,
+                                ))
+                                break  # best video version
+                        # Image in carousel (only if no video for this item)
+                        if not cm.get("video_versions"):
+                            candidates = cm.get("image_versions2", {}).get("candidates", [])
+                            good = [
+                                c for c in candidates
+                                if c.get("url")
+                                and not _is_profile_pic(c["url"], c.get("width", 0), c.get("height", 0))
+                                and not (pp_name and _cdn_filename(c["url"]) == pp_name)
+                            ]
+                            if good:
+                                best = max(good, key=lambda c: c.get("width", 0) * c.get("height", 0))
+                                if not thumbnail:
+                                    thumbnail = best["url"]
+                                variants.append(ScrapedVariant(
+                                    label=f"Photo {idx}", format="jpg",
+                                    url=best["url"],
+                                ))
+                    if variants:
+                        logger.info("ig_media_info_carousel", host=host, count=len(variants))
+                        return ScrapedResult(
+                            title="Instagram Post",
+                            author=author or item.get("user", {}).get("username"),
+                            thumbnail_url=thumbnail,
+                            content_type="video" if any(v.has_video for v in variants) else "image",
+                            variants=variants,
+                        )
+
+                # ── Single media item ───────────────────────────────
+                # For stories, check for inner reshared media
+                if is_story:
+                    inner = self._extract_inner_story_media(item)
+                    is_direct = inner is None
+                    if inner:
+                        item = inner
+                else:
+                    is_direct = False
 
                 variants: list[ScrapedVariant] = []
                 thumbnail = None
@@ -407,6 +458,7 @@ class InstagramScraper(BaseScraper):
                     c_w = c.get("width", 0)
                     c_h = c.get("height", 0)
                     if not c_url or _is_profile_pic(c_url, c_w, c_h, story_context=is_direct):
+                        logger.debug("ig_filtered_as_profile_pic", url=c_url[:80], w=c_w, h=c_h)
                         continue
                     if pp_name and _cdn_filename(c_url) == pp_name:
                         continue
@@ -419,12 +471,16 @@ class InstagramScraper(BaseScraper):
                         ))
 
                 if variants:
-                    logger.info("ig_media_info_success", host=host)
+                    title = "Instagram Story" if is_story else "Instagram Post"
+                    ctype = "story" if is_story else (
+                        "video" if any(v.has_video for v in variants) else "image"
+                    )
+                    logger.info("ig_media_info_success", host=host, is_story=is_story)
                     return ScrapedResult(
-                        title="Instagram Story",
+                        title=title,
                         author=author or item.get("user", {}).get("username"),
                         thumbnail_url=thumbnail,
-                        content_type="story", variants=variants,
+                        content_type=ctype, variants=variants,
                     )
             except Exception as exc:
                 logger.debug("ig_media_info_error", host=host, error=str(exc)[:80])
@@ -508,13 +564,12 @@ class InstagramScraper(BaseScraper):
 
         headers = _get_ig_auth_headers()
 
-        # Try media info first
+        # Try media info first (with is_story=False for correct filtering)
         media_id = self._shortcode_to_media_id(shortcode)
         if media_id:
             try:
-                result = await self._try_media_info_api(str(media_id))
+                result = await self._try_media_info_api(str(media_id), is_story=False)
                 if result and result.variants:
-                    result.content_type = "image"
                     return result
             except Exception:
                 pass
@@ -707,7 +762,7 @@ class InstagramScraper(BaseScraper):
                 if not thumbnail:
                     thumbnail = best_img["url"]
                 # Add as photo variant only if we didn't already add a video
-                if media_type == 1 and not vids:
+                if not vids:
                     variants.append(ScrapedVariant(
                         label=f"Story Photo {len(variants) + 1}", format="jpg",
                         url=best_img["url"],
@@ -766,9 +821,9 @@ class InstagramScraper(BaseScraper):
                 "profile_pic", "t51.2885-19",
             )):
                 continue
-            if _SQUARE_SIZE_RE.search(clean):
-                m = _SQUARE_SIZE_RE.search(clean)
-                if m and m.group(1) == m.group(2):
+            m_sq = _SQUARE_SIZE_RE.search(clean)
+            if m_sq and m_sq.group(1) == m_sq.group(2):
+                if int(m_sq.group(1)) <= 320:
                     continue
             if clean not in seen:
                 seen.add(clean)

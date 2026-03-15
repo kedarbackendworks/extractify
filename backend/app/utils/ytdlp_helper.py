@@ -52,34 +52,51 @@ logger.info("ytdlp_helper_ready", has_pot_provider=True, has_proxy=bool(_proxy))
 import re
 _YT_RE = re.compile(r"(youtube\.com|youtu\.be)", re.IGNORECASE)
 
+class _YtdlpDebugLogger:
+    """Captures yt-dlp debug output for structlog."""
+    def __init__(self): self.lines = []
+    def debug(self, msg):
+        if isinstance(msg, str):
+            self.lines.append(msg)
+    def warning(self, msg):
+        if isinstance(msg, str):
+            self.lines.append(f"WARN: {msg}")
+    def error(self, msg):
+        if isinstance(msg, str):
+            self.lines.append(f"ERR: {msg}")
+
 
 def _extract_sync(url: str, extra_opts: dict | None = None) -> Dict[str, Any]:
     """Synchronous extraction (runs in thread pool)."""
     opts = {**_YDL_OPTS, **(extra_opts or {})}
+    is_youtube = _YT_RE.search(url)
+    debug_logger = None
+
+    # For YouTube: enable verbose mode to see POT/plugin activity
+    if is_youtube:
+        debug_logger = _YtdlpDebugLogger()
+        opts["quiet"] = False
+        opts["verbose"] = True
+        opts["no_warnings"] = False
+        opts["logger"] = debug_logger
+        opts["socket_timeout"] = 30  # POT generation needs more time
+
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)
         result = ydl.sanitize_info(info)  # type: ignore[arg-type]
 
-        # ── Diagnostic logging for YouTube ────────────────────────
-        if _YT_RE.search(url):
+        if is_youtube and debug_logger:
             fmts = result.get("formats", [])
-            protocols = {}
-            for f in fmts:
-                p = f.get("protocol", "unknown")
-                protocols[p] = protocols.get(p, 0) + 1
-            https_count = sum(1 for f in fmts if f.get("protocol") in ("https", "http"))
-            sample = None
-            if fmts:
-                f0 = fmts[0]
-                sample = f"{f0.get('format_id')}|{f0.get('ext')}|{f0.get('protocol')}|{f0.get('vcodec','?')[:8]}"
+            # Log key debug lines about POT/plugin/playability
+            pot_lines = [l for l in debug_logger.lines
+                         if any(k in l.lower() for k in
+                                ["pot", "bgutil", "plugin", "provider",
+                                 "playab", "token", "sign in", "bot"])]
             logger.info(
-                "ytdlp_youtube_diag",
+                "ytdlp_youtube_debug",
                 total_formats=len(fmts),
-                https_formats=https_count,
-                protocols=protocols,
-                sample=sample,
-                has_url=bool(result.get("url")),
                 title=str(result.get("title", ""))[:60],
+                pot_plugin_lines=pot_lines[:15],
             )
 
         return result
