@@ -69,7 +69,8 @@ export default function Navbar() {
                 onClick={() => setLangOpen(!langOpen)}
                 className="flex items-center justify-center gap-2 rounded-[33px] border border-border-light bg-card px-2.5 py-2 sm:px-3"
               >
-                <span className="text-lg">{localeConfig[locale].flag}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`https://flagcdn.com/w40/${localeConfig[locale].flagCode}.png`} alt={localeConfig[locale].label} className="w-5 h-auto rounded-[2px]" />
                 <span className="text-foreground text-base sm:text-lg font-semibold">{localeConfig[locale].label}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${langOpen ? "rotate-180" : ""}`} />
               </button>
@@ -84,7 +85,8 @@ export default function Navbar() {
                         locale === code ? "text-primary bg-background" : "text-foreground"
                       }`}
                     >
-                      <span className="text-lg">{localeConfig[code].flag}</span>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`https://flagcdn.com/w40/${localeConfig[code].flagCode}.png`} alt={localeConfig[code].label} className="w-5 h-auto rounded-[2px]" />
                       <span className="truncate text-left">{localeConfig[code].nativeName}</span>
                       <span className="ml-auto text-xs text-muted">{localeConfig[code].label}</span>
                     </button>

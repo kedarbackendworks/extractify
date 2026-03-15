@@ -27,27 +27,27 @@ export type Locale =
   | "zh" | "ko" | "ru" | "it" | "tr" | "nl" | "pl" | "id"
   | "th" | "vi" | "uk" | "bn";
 
-export const localeConfig: Record<Locale, { flag: string; label: string; nativeName: string }> = {
-  en: { flag: "🇺🇸", label: "EN", nativeName: "English" },
-  es: { flag: "🇪🇸", label: "ES", nativeName: "Español" },
-  fr: { flag: "🇫🇷", label: "FR", nativeName: "Français" },
-  de: { flag: "🇩🇪", label: "DE", nativeName: "Deutsch" },
-  pt: { flag: "🇧🇷", label: "PT", nativeName: "Português" },
-  hi: { flag: "🇮🇳", label: "HI", nativeName: "हिन्दी" },
-  ja: { flag: "🇯🇵", label: "JA", nativeName: "日本語" },
-  ar: { flag: "🇸🇦", label: "AR", nativeName: "العربية" },
-  zh: { flag: "🇨🇳", label: "ZH", nativeName: "中文" },
-  ko: { flag: "🇰🇷", label: "KO", nativeName: "한국어" },
-  ru: { flag: "🇷🇺", label: "RU", nativeName: "Русский" },
-  it: { flag: "🇮🇹", label: "IT", nativeName: "Italiano" },
-  tr: { flag: "🇹🇷", label: "TR", nativeName: "Türkçe" },
-  nl: { flag: "🇳🇱", label: "NL", nativeName: "Nederlands" },
-  pl: { flag: "🇵🇱", label: "PL", nativeName: "Polski" },
-  id: { flag: "🇮🇩", label: "ID", nativeName: "Bahasa Indonesia" },
-  th: { flag: "🇹🇭", label: "TH", nativeName: "ไทย" },
-  vi: { flag: "🇻🇳", label: "VI", nativeName: "Tiếng Việt" },
-  uk: { flag: "🇺🇦", label: "UK", nativeName: "Українська" },
-  bn: { flag: "🇧🇩", label: "BN", nativeName: "বাংলা" },
+export const localeConfig: Record<Locale, { flagCode: string; label: string; nativeName: string }> = {
+  en: { flagCode: "us", label: "EN", nativeName: "English" },
+  es: { flagCode: "es", label: "ES", nativeName: "Español" },
+  fr: { flagCode: "fr", label: "FR", nativeName: "Français" },
+  de: { flagCode: "de", label: "DE", nativeName: "Deutsch" },
+  pt: { flagCode: "br", label: "PT", nativeName: "Português" },
+  hi: { flagCode: "in", label: "HI", nativeName: "हिन्दी" },
+  ja: { flagCode: "jp", label: "JA", nativeName: "日本語" },
+  ar: { flagCode: "sa", label: "AR", nativeName: "العربية" },
+  zh: { flagCode: "cn", label: "ZH", nativeName: "中文" },
+  ko: { flagCode: "kr", label: "KO", nativeName: "한국어" },
+  ru: { flagCode: "ru", label: "RU", nativeName: "Русский" },
+  it: { flagCode: "it", label: "IT", nativeName: "Italiano" },
+  tr: { flagCode: "tr", label: "TR", nativeName: "Türkçe" },
+  nl: { flagCode: "nl", label: "NL", nativeName: "Nederlands" },
+  pl: { flagCode: "pl", label: "PL", nativeName: "Polski" },
+  id: { flagCode: "id", label: "ID", nativeName: "Bahasa Indonesia" },
+  th: { flagCode: "th", label: "TH", nativeName: "ไทย" },
+  vi: { flagCode: "vn", label: "VI", nativeName: "Tiếng Việt" },
+  uk: { flagCode: "ua", label: "UK", nativeName: "Українська" },
+  bn: { flagCode: "bd", label: "BN", nativeName: "বাংলা" },
 };
 
 const translations: Record<Locale, Record<string, string>> = {

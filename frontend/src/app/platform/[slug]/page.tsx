@@ -472,14 +472,14 @@ export default function PlatformPage({ params }: PlatformPageProps) {
                   src={isHlsUrl(rawPreviewUrl || undefined) ? undefined : (previewUrl || undefined)}
                   controls
                   playsInline
-                  className="w-full h-full min-h-[414px] object-contain bg-black"
+                  className="w-full h-full min-h-[414px] max-h-[500px] object-contain bg-black"
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
                   alt={downloadResult.title || "Preview"}
-                  className="w-full h-full min-h-[414px] object-contain bg-[#525659]"
+                  className="w-full h-full min-h-[414px] max-h-[500px] object-contain bg-black"
                 />
               )
             ) : (
@@ -546,11 +546,13 @@ export default function PlatformPage({ params }: PlatformPageProps) {
         </div>
       ) : isLoading ? (
         <div className="w-full max-w-[680px] flex flex-col gap-5">
-          <DownloadProgress
-            elapsedSeconds={elapsedSeconds}
-            downloadedBytes={undefined}
-            totalBytes={undefined}
-          />
+          {isDocumentPlatform && (
+            <DownloadProgress
+              elapsedSeconds={elapsedSeconds}
+              downloadedBytes={undefined}
+              totalBytes={undefined}
+            />
+          )}
           <ContentPreview isEmpty={false}>
             <div className="flex flex-col items-center gap-4">
               <svg

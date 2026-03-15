@@ -41,7 +41,7 @@ export default function DownloadProgress({
         {/* Content */}
         <div className="flex flex-1 flex-col gap-3 items-start justify-center w-full">
           <p className="text-[14px] sm:text-[16px] font-medium text-foreground">
-            Please wait ... Your file is getting ready in {elapsedSeconds} seconds
+            Please wait ... Your document is downloading in {elapsedSeconds} seconds
           </p>
 
           {/* Progress bar */}

@@ -16,13 +16,13 @@
   --color-tab-bg: #fbfbfb;
   --color-green: #44ad57;
   --color-progress-track: #e9ecf1;
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-inter, ui-sans-serif, system-ui, sans-serif);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* Adblock wall shake animation */
