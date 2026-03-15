@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, use, useEffect, useRef, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import UrlInput from "@/components/UrlInput";
 import ContentTabs from "@/components/ContentTabs";
@@ -10,6 +10,7 @@ import CloudflareCheck from "@/components/CloudflareCheck";
 import DownloadProgress from "@/components/DownloadProgress";
 import { platformConfigs } from "@/lib/platforms";
 import { detectContentTab } from "@/lib/url-tab-detect";
+import { detectPlatformSlugFromUrl } from "@/lib/platform-detect";
 import { useTranslation } from "@/lib/i18n";
 import Hls from "hls.js";
 
@@ -185,6 +186,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
   const searchParams = useSearchParams();
   const initialUrl = searchParams.get("url") || "";
   const { t } = useTranslation();
+  const router = useRouter();
 
   const platform = platformConfigs[slug];
 
@@ -220,6 +222,16 @@ export default function PlatformPage({ params }: PlatformPageProps) {
   const hlsAudioRef = useRef<Hls | null>(null);
 
   const handleUrlSubmit = useCallback(async (url: string) => {
+    // If the URL belongs to a different platform, redirect there
+    const detectedSlug = detectPlatformSlugFromUrl(url);
+    if (detectedSlug && detectedSlug !== slug) {
+      const params = new URLSearchParams({ url });
+      const tab = detectContentTab(url, detectedSlug);
+      if (tab) params.set("tab", tab);
+      router.push(`/platform/${detectedSlug}?${params.toString()}`);
+      return;
+    }
+
     // Auto-detect the correct tab from the URL
     const autoTab = detectContentTab(url, slug);
     const effectiveTab = autoTab || activeTab;
@@ -297,7 +309,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
       setErrorMessage(error instanceof Error ? error.message : "Something went wrong");
       setIsLoading(false);
     }
-  }, [slug, activeTab, botVerified]);
+  }, [slug, activeTab, botVerified, router]);
 
   // If URL came from the homepage, auto-trigger (once)
   useEffect(() => {

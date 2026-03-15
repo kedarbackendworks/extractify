@@ -20,7 +20,7 @@ export function detectContentTab(
       if (lower.includes("/reel/") || lower.includes("/reels/"))
         detected = "Reels";
       else if (lower.includes("/stories/")) detected = "Stories";
-      else if (lower.includes("/p/")) detected = "Feed";
+      else if (lower.includes("/p/")) detected = "Photos";
       else if (lower.includes("/tv/")) detected = "IGTV";
       else if (lower.includes("/live/")) detected = "Live";
       break;
