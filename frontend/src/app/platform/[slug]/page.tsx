@@ -76,11 +76,66 @@ const PLAYABLE_VIDEO_FORMATS = new Set(["mp4", "webm", "mov", "m4v"]);
 const PLAYABLE_AUDIO_FORMATS = new Set(["mp3", "ogg", "opus", "wav", "m4a", "aac", "flac"]);
 const IMAGE_FORMATS = new Set(["jpg", "jpeg", "png", "webp", "gif", "bmp", "svg"]);
 const DOCUMENT_CONTENT_TYPES = new Set(["pdf", "document", "presentation"]);
+const ETA_STORAGE_KEY = "extractify:pdf-publication-eta-v1";
+const DEFAULT_PDF_PUBLICATION_ETA_SECONDS = 18;
 
 /** Platforms that should show the Cloudflare bot verification before extraction */
 const DOCUMENT_PLATFORMS = new Set([
   "scribd", "slideshare", "issuu", "calameo", "yumpu", "slideserve",
 ]);
+
+function isPdfOrPublicationTab(tab?: string | null): boolean {
+  if (!tab) return false;
+  const normalized = tab.trim().toLowerCase();
+  return normalized.includes("pdf") || normalized.includes("publication");
+}
+
+function getEtaCacheKey(slug: string, tab: string): string {
+  return `${slug}:${tab.trim().toLowerCase()}`;
+}
+
+function getStoredEstimatedSeconds(slug: string, tab: string): number {
+  if (typeof window === "undefined") return DEFAULT_PDF_PUBLICATION_ETA_SECONDS;
+  try {
+    const raw = window.localStorage.getItem(ETA_STORAGE_KEY);
+    if (!raw) return DEFAULT_PDF_PUBLICATION_ETA_SECONDS;
+    const parsed = JSON.parse(raw) as Record<string, { avg: number }>;
+    const entry = parsed[getEtaCacheKey(slug, tab)];
+    if (!entry || typeof entry.avg !== "number" || Number.isNaN(entry.avg)) {
+      return DEFAULT_PDF_PUBLICATION_ETA_SECONDS;
+    }
+    return Math.min(120, Math.max(8, Math.round(entry.avg)));
+  } catch {
+    return DEFAULT_PDF_PUBLICATION_ETA_SECONDS;
+  }
+}
+
+function updateStoredEstimatedSeconds(slug: string, tab: string, actualSeconds: number): void {
+  if (typeof window === "undefined") return;
+  if (!Number.isFinite(actualSeconds) || actualSeconds <= 0) return;
+
+  try {
+    const raw = window.localStorage.getItem(ETA_STORAGE_KEY);
+    const parsed = raw ? (JSON.parse(raw) as Record<string, { avg: number; samples: number }>) : {};
+
+    const key = getEtaCacheKey(slug, tab);
+    const previous = parsed[key];
+    const safeActual = Math.min(120, Math.max(3, Math.round(actualSeconds)));
+
+    if (!previous) {
+      parsed[key] = { avg: safeActual, samples: 1 };
+    } else {
+      const cappedSamples = Math.min(previous.samples || 1, 10);
+      const nextSamples = Math.min(cappedSamples + 1, 10);
+      const nextAvg = (previous.avg * cappedSamples + safeActual) / nextSamples;
+      parsed[key] = { avg: nextAvg, samples: nextSamples };
+    }
+
+    window.localStorage.setItem(ETA_STORAGE_KEY, JSON.stringify(parsed));
+  } catch {
+    // Ignore storage failures (private mode, quota, etc.) and keep default ETA behavior.
+  }
+}
 
 function isHlsUrl(url?: string): boolean {
   if (!url) return false;
@@ -152,6 +207,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [botVerified, setBotVerified] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [estimatedTotalSeconds, setEstimatedTotalSeconds] = useState<number | null>(null);
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const hasTriggeredRef = useRef(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -163,6 +219,8 @@ export default function PlatformPage({ params }: PlatformPageProps) {
     // Auto-detect the correct tab from the URL
     const autoTab = detectContentTab(url, slug);
     const effectiveTab = autoTab || activeTab;
+    const shouldUseEstimatedEta = DOCUMENT_PLATFORMS.has(slug) && isPdfOrPublicationTab(effectiveTab);
+    const startedAt = Date.now();
     if (autoTab) {
       setActiveTab(autoTab);
     }
@@ -177,6 +235,9 @@ export default function PlatformPage({ params }: PlatformPageProps) {
     setErrorMessage(null);
     setDownloadResult(null);
     setSelectedVariant(null);
+    setEstimatedTotalSeconds(
+      shouldUseEstimatedEta ? getStoredEstimatedSeconds(slug, effectiveTab) : null
+    );
 
     try {
       const createResp = await fetch(`${API_BASE_URL}/api/extract`, {
@@ -211,6 +272,10 @@ export default function PlatformPage({ params }: PlatformPageProps) {
         if (polledJob.status === "completed") {
           setDownloadResult(polledJob.extracted || null);
           setSelectedVariant(pickBestPreviewVariant(polledJob.extracted || null));
+          if (shouldUseEstimatedEta) {
+            const actualSeconds = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+            updateStoredEstimatedSeconds(slug, effectiveTab, actualSeconds);
+          }
           setIsLoading(false);
           return;
         }
@@ -251,6 +316,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
   useEffect(() => {
     if (!isLoading) {
       setElapsedSeconds(0);
+      setEstimatedTotalSeconds(null);
       return;
     }
     const interval = setInterval(() => {
@@ -258,6 +324,16 @@ export default function PlatformPage({ params }: PlatformPageProps) {
     }, 1000);
     return () => clearInterval(interval);
   }, [isLoading]);
+
+  const shouldShowPdfPublicationEta =
+    isLoading &&
+    DOCUMENT_PLATFORMS.has(slug) &&
+    isPdfOrPublicationTab(activeTab) &&
+    estimatedTotalSeconds !== null;
+
+  const estimatedRemainingSeconds = shouldShowPdfPublicationEta
+    ? Math.max(1, estimatedTotalSeconds - elapsedSeconds)
+    : undefined;
 
   const isDocumentPlatform = DOCUMENT_PLATFORMS.has(slug);
 
@@ -399,7 +475,12 @@ export default function PlatformPage({ params }: PlatformPageProps) {
 
       {/* URL Input */}
       <div className="mb-5 w-full flex justify-center">
-        <UrlInput onSubmit={handleUrlSubmit} isLoading={isLoading} initialValue={initialUrl} elapsedSeconds={isLoading ? elapsedSeconds : undefined} />
+        <UrlInput
+          onSubmit={handleUrlSubmit}
+          isLoading={isLoading}
+          initialValue={initialUrl}
+          estimatedRemainingSeconds={estimatedRemainingSeconds}
+        />
       </div>
 
       {/* Cloudflare bot verification - shown for document platforms */}
@@ -549,6 +630,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
           {isDocumentPlatform && (
             <DownloadProgress
               elapsedSeconds={elapsedSeconds}
+              estimatedRemainingSeconds={estimatedRemainingSeconds}
               downloadedBytes={undefined}
               totalBytes={undefined}
             />

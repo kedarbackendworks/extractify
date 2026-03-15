@@ -3,6 +3,8 @@
 interface DownloadProgressProps {
   /** Elapsed time in seconds */
   elapsedSeconds: number;
+  /** Estimated time remaining in seconds */
+  estimatedRemainingSeconds?: number;
   /** Downloaded bytes so far */
   downloadedBytes?: number;
   /** Total file size in bytes */
@@ -15,6 +17,7 @@ interface DownloadProgressProps {
 
 export default function DownloadProgress({
   elapsedSeconds,
+  estimatedRemainingSeconds,
   downloadedBytes,
   totalBytes,
   onDownload,
@@ -41,7 +44,7 @@ export default function DownloadProgress({
         {/* Content */}
         <div className="flex flex-1 flex-col gap-3 items-start justify-center w-full">
           <p className="text-[14px] sm:text-[16px] font-medium text-foreground">
-            Please wait ... Your document is downloading in {elapsedSeconds} seconds
+            Please wait ... Your document is downloading in {estimatedRemainingSeconds ?? elapsedSeconds} seconds
           </p>
 
           {/* Progress bar */}

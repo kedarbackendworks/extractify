@@ -7,7 +7,7 @@ interface UrlInputProps {
   onSubmit: (url: string) => void;
   isLoading?: boolean;
   initialValue?: string;
-  elapsedSeconds?: number;
+  estimatedRemainingSeconds?: number;
 }
 
 /**
@@ -35,7 +35,12 @@ function normalizeUrl(raw: string): string {
   return cleaned;
 }
 
-export default function UrlInput({ onSubmit, isLoading = false, initialValue = "", elapsedSeconds }: UrlInputProps) {
+export default function UrlInput({
+  onSubmit,
+  isLoading = false,
+  initialValue = "",
+  estimatedRemainingSeconds,
+}: UrlInputProps) {
   const [url, setUrl] = useState(initialValue);
   const { t } = useTranslation();
 
@@ -89,8 +94,8 @@ export default function UrlInput({ onSubmit, isLoading = false, initialValue = "
               />
             </svg>
             <span>{t("input.processing")}</span>
-            {elapsedSeconds !== undefined && (
-              <span>{elapsedSeconds}s</span>
+            {estimatedRemainingSeconds !== undefined && (
+              <span>{estimatedRemainingSeconds}s</span>
             )}
           </div>
         ) : (
