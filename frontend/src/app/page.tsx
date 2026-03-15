@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import UrlInput from "@/components/UrlInput";
 import { detectContentTab } from "@/lib/url-tab-detect";
 import { detectPlatformSlugFromUrl } from "@/lib/platform-detect";
+import { useTranslation } from "@/lib/i18n";
 
 const imgIcon = "/assets/figma/7-368/imgIcon.svg";
 const imgIcon1 = "/assets/figma/7-368/imgIcon1.svg";
@@ -298,52 +299,29 @@ export default function Desktop() {
   const router = useRouter();
   const [inputError, setInputError] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number>(0);
+  const { t } = useTranslation();
 
   const faqItems = [
-    {
-      question: "Is this social media downloader free to use?",
-      answer:
-        "Yes, our platform is completely free to use. You can download videos, photos, reels, and other content from multiple social media platforms without paying any fees or purchasing a subscription. There are no hidden charges, and you can enjoy unlimited downloads anytime.",
-    },
-    {
-      question: "Do I need to create an account to download content?",
-      answer:
-        "No account is required. You can paste your link and download directly without signing up or sharing personal information.",
-    },
-    {
-      question: "Is it safe to use this downloader?",
-      answer:
-        "Yes. We do not ask for login credentials and we do not store your download links or history, so your activity stays private.",
-    },
-    {
-      question: "What platforms are supported?",
-      answer:
-        "The platform supports a wide range of social media sources including short video, photo, and post-based platforms, all in one place.",
-    },
-    {
-      question: "Can I download content in high quality?",
-      answer:
-        "Yes. When high-quality options are available from the source, you can choose and download the best quality provided.",
-    },
-    {
-      question: "Why is my download not working?",
-      answer:
-        "This usually happens when a link is private, restricted, expired, or temporarily unavailable. Recheck the link and try again.",
-    },
+    { question: t("faq.q1"), answer: t("faq.a1") },
+    { question: t("faq.q2"), answer: t("faq.a2") },
+    { question: t("faq.q3"), answer: t("faq.a3") },
+    { question: t("faq.q4"), answer: t("faq.a4") },
+    { question: t("faq.q5"), answer: t("faq.a5") },
+    { question: t("faq.q6"), answer: t("faq.a6") },
   ];
 
   const comparisonRows = [
-    { feature: "Cost to Use", brand: "100% Free", other: "Subscription or hidden fees" },
-    { feature: "Supported Platforms", brand: "22 Platforms", other: "Limited platforms" },
-    { feature: "Download Categories", brand: "All Content Types Available", other: "Limited options" },
-    { feature: "Download Speed", brand: "Fast Processing", other: "Slower or inconsistent" },
-    { feature: "Reliability", brand: "High Success Rate", other: "Download failures possible" },
+    { feature: t("comparison.r1Feature"), brand: t("comparison.r1Us"), other: t("comparison.r1Them") },
+    { feature: t("comparison.r2Feature"), brand: t("comparison.r2Us"), other: t("comparison.r2Them") },
+    { feature: t("comparison.r3Feature"), brand: t("comparison.r3Us"), other: t("comparison.r3Them") },
+    { feature: t("comparison.r4Feature"), brand: t("comparison.r4Us"), other: t("comparison.r4Them") },
+    { feature: t("comparison.r5Feature"), brand: t("comparison.r5Us"), other: t("comparison.r5Them") },
   ];
 
   const handleLandingSubmit = (url: string) => {
     const slug = detectPlatformSlugFromUrl(url);
     if (!slug) {
-      setInputError("Unsupported link. Please paste a supported platform URL.");
+      setInputError(t("input.unsupported"));
       return;
     }
 
@@ -363,10 +341,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full max-w-[1068px]" data-node-id="landing:hero">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full max-w-[1068px]">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-normal min-w-0 relative shrink-0 text-[#2d2d2d] text-[clamp(1.25rem,5vw,2rem)] w-full">
-              Download Anything from Your Favorite Social Platforms
+              {t("hero.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] sm:leading-[28px] relative shrink-0 text-[#404040] text-[16px] sm:text-[20px] w-full max-w-[431px]">
-              Access high-quality downloads from multiple platforms by simply pasting your URL.
+              {t("hero.subtitle")}
             </p>
           </div>
           <div className="w-full flex justify-center px-2">
@@ -374,7 +352,7 @@ export default function Desktop() {
           </div>
           <div className="bg-[#f8f8f8] border border-[#e5e5e5] content-stretch flex items-center justify-center h-auto min-h-[200px] md:h-[293px] relative rounded-[16px] shrink-0 w-full max-w-[620px] aspect-video md:aspect-auto">
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[40px] not-italic text-[#aaaaaa] text-[16px] text-center w-[332px]">
-              After the link is pasted it will showcase here what the user is downloading
+              {t("preview.empty")}
             </p>
           </div>
           {inputError && (
@@ -386,10 +364,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full max-w-[1068px]" data-node-id="8:503">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full max-w-[855px] px-4 lg:px-0" data-node-id="7:370">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.25rem,4vw,1.5rem)] w-full" data-node-id="7:371">
-              Download in 3 Simple Steps
+              {t("howItWorks.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[340px]" data-node-id="7:372">
-              Follow a few quick steps to download your favorite content directly to your device.
+              {t("howItWorks.subtitle")}
             </p>
           </div>
           <div className="hidden lg:flex content-stretch gap-[14px] items-center justify-center relative shrink-0" data-node-id="8:500">
@@ -425,17 +403,17 @@ export default function Desktop() {
               </div>
               <div className="content-stretch flex flex-col gap-[16px] items-start not-italic relative shrink-0 w-full" data-node-id="8:394">
                 <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#404040] text-[16px] w-full" data-node-id="8:395">
-                  Copy the Link
+                  {t("howItWorks.step1Title")}
                 </p>
                 <ul className="block font-['Inter:Regular',sans-serif] font-normal leading-[0] list-disc relative shrink-0 text-[#606060] text-[15px] w-full" data-node-id="8:396">
                   <li className="mb-0 ms-[22.5px]">
-                    <span className="leading-[24px]">Open your preferred social media platform.</span>
+                    <span className="leading-[24px]">{t("howItWorks.step1_1")}</span>
                   </li>
                   <li className="mb-0 ms-[22.5px]">
-                    <span className="leading-[24px]">Find the content you want to download.</span>
+                    <span className="leading-[24px]">{t("howItWorks.step1_2")}</span>
                   </li>
                   <li className="ms-[22.5px]">
-                    <span className="leading-[24px]">Copy the URL from the share option.</span>
+                    <span className="leading-[24px]">{t("howItWorks.step1_3")}</span>
                   </li>
                 </ul>
               </div>
@@ -446,17 +424,17 @@ export default function Desktop() {
               </div>
               <div className="content-stretch flex flex-col gap-[16px] items-start not-italic relative shrink-0 w-full" data-node-id="8:414">
                 <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#404040] text-[16px] w-full" data-node-id="8:415">
-                  Paste the Link
+                  {t("howItWorks.step2Title")}
                 </p>
                 <ul className="block font-['Inter:Regular',sans-serif] font-normal leading-[0] list-disc relative shrink-0 text-[#606060] text-[15px] w-full" data-node-id="8:416">
                   <li className="mb-0 ms-[22.5px]">
-                    <span className="leading-[24px]">Paste the copied link into the input field</span>
+                    <span className="leading-[24px]">{t("howItWorks.step2_1")}</span>
                   </li>
                   <li className="mb-0 ms-[22.5px]">
-                    <span className="leading-[24px]">Click the download button</span>
+                    <span className="leading-[24px]">{t("howItWorks.step2_2")}</span>
                   </li>
                   <li className="ms-[22.5px]">
-                    <span className="leading-[24px]">Wait a few seconds for processing</span>
+                    <span className="leading-[24px]">{t("howItWorks.step2_3")}</span>
                   </li>
                 </ul>
               </div>
@@ -467,17 +445,17 @@ export default function Desktop() {
               </div>
               <div className="content-stretch flex flex-col gap-[16px] items-start not-italic relative shrink-0 w-full" data-node-id="8:434">
                 <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#404040] text-[16px] w-full" data-node-id="8:435">
-                  Download Instantly
+                  {t("howItWorks.step3Title")}
                 </p>
                 <ul className="block font-['Inter:Regular',sans-serif] font-normal leading-[0] list-disc relative shrink-0 text-[#606060] text-[15px] w-full" data-node-id="8:436">
                   <li className="mb-0 ms-[22.5px]">
-                    <span className="leading-[24px]">Preview the available formats or quality options</span>
+                    <span className="leading-[24px]">{t("howItWorks.step3_1")}</span>
                   </li>
                   <li className="mb-0 ms-[22.5px]">
-                    <span className="leading-[24px]">Select your preferred version</span>
+                    <span className="leading-[24px]">{t("howItWorks.step3_2")}</span>
                   </li>
                   <li className="ms-[22.5px]">
-                    <span className="leading-[24px]">Save the file directly to your device</span>
+                    <span className="leading-[24px]">{t("howItWorks.step3_3")}</span>
                   </li>
                 </ul>
               </div>
@@ -487,19 +465,19 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full max-w-[1155px] px-4 lg:px-0" data-node-id="10:349">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full max-w-[855px]" data-node-id="10:72">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.25rem,4vw,1.5rem)] w-full" data-node-id="10:73">
-              Our Platform Overview
+              {t("platformOverview.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[519px]" data-node-id="10:77">
-              Save your favorite online media in seconds with a fast, efficient, and easy-to-use downloader that works across multiple platforms.
+              {t("platformOverview.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col lg:flex-row gap-[24px] lg:gap-[155px] items-center justify-center relative shrink-0 w-full" data-node-id="10:93">
             <div className="content-stretch flex flex-col font-['Inter:Regular',sans-serif] font-normal gap-[15px] items-start leading-[28px] not-italic relative shrink-0 text-[#404040] text-[16px] w-full lg:w-[612px]" data-node-id="10:76">
               <p className="relative shrink-0 w-full" data-node-id="10:74">
-                Our platform is an all-in-one social media downloader designed to help users save their favorite online content quickly and effortlessly. Whether you want to download videos, reels, photos, carousels, or posts, our tool makes the process simple by allowing you to paste a link and get instant results in high quality.
+                {t("platformOverview.p1")}
               </p>
               <p className="relative shrink-0 w-full" data-node-id="10:75">
-                We focus on delivering a fast, user-friendly, and reliable downloading experience across multiple platforms, ensuring compatibility with different devices including smartphones, tablets, and desktops. With advanced processing technology, users can enjoy smooth performance, unlimited downloads, and high-speed conversions without unnecessary steps or complications.
+                {t("platformOverview.p2")}
               </p>
             </div>
             <div className="flex flex-row items-center self-stretch w-full lg:w-auto">
@@ -510,7 +488,7 @@ export default function Desktop() {
                       200k+
                     </p>
                     <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[16px] text-black" data-node-id="10:78">
-                      Happy users
+                      {t("platformOverview.stat1Label")}
                     </p>
                   </div>
                   <div className="bg-[#ece8f5] content-stretch flex flex-col gap-[8px] items-start justify-center p-4 lg:p-[20px] relative rounded-[12px] w-full lg:w-[184px]" data-node-id="10:84">
@@ -518,7 +496,7 @@ export default function Desktop() {
                       99%
                     </p>
                     <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[16px] text-black" data-node-id="10:86">
-                      Success Rate
+                      {t("platformOverview.stat3Label")}
                     </p>
                   </div>
                 </div>
@@ -528,7 +506,7 @@ export default function Desktop() {
                       3M+
                     </p>
                     <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[16px] text-black" data-node-id="10:83">
-                      Files Downloaded
+                      {t("platformOverview.stat2Label")}
                     </p>
                   </div>
                   <div className="bg-[#ece8f5] content-stretch flex flex-col gap-[8px] items-start justify-center p-4 lg:p-[20px] relative rounded-[12px] w-full lg:w-[184px]" data-node-id="10:87">
@@ -536,7 +514,7 @@ export default function Desktop() {
                       120+
                     </p>
                     <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[16px] text-black" data-node-id="10:89">
-                      Countries Reached
+                      {t("platformOverview.stat4Label")}
                     </p>
                   </div>
                 </div>
@@ -547,10 +525,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center justify-center relative shrink-0 w-full max-w-[1312px] px-4 lg:px-0" data-name="Section" data-node-id="16:188">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="16:447">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.25rem,4vw,1.5rem)]" data-node-id="16:448">
-              Why Choose Us
+              {t("whyChooseUs.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[614px]" data-node-id="16:449">
-              We provide a fast, secure, and user-friendly platform designed to make downloading content from multiple social media platforms simple and reliable.
+              {t("whyChooseUs.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-node-id="16:562">
@@ -560,11 +538,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="16:521">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="16:540">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px] text-center" data-node-id="16:522">
-                      Fast and Efficient Downloads
+                      {t("whyChooseUs.f1Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] text-center w-full" data-node-id="16:523">
-                    Our platform is optimized for speed, allowing you to download videos, photos, and other content within seconds without unnecessary delays or complicated steps.
+                    {t("whyChooseUs.f1Desc")}
                   </p>
                 </div>
               </div>
@@ -573,11 +551,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="16:527">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="16:541">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px] text-center" data-node-id="16:528">
-                      Secure and Private Experience
+                      {t("whyChooseUs.f2Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] text-center w-full" data-node-id="16:529">
-                    We prioritize your privacy by ensuring that your links and activity are not stored or tracked, giving you a safe environment you can trust every time you use the service.
+                    {t("whyChooseUs.f2Desc")}
                   </p>
                 </div>
               </div>
@@ -590,11 +568,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="16:533">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="16:542">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px] text-center" data-node-id="16:534">
-                      Completely Free Access
+                      {t("whyChooseUs.f3Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] text-center w-full" data-node-id="16:535">
-                    Enjoy unlimited downloads without subscriptions, hidden charges, or premium restrictions, making the platform accessible to everyone whenever they need it.
+                    {t("whyChooseUs.f3Desc")}
                   </p>
                 </div>
               </div>
@@ -619,11 +597,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:682">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:683">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px] text-center" data-node-id="51:684">
-                      Multiple Platforms in One Place
+                      {t("whyChooseUs.f4Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] text-center w-full" data-node-id="51:685">
-                    Download content from a wide range of social media platforms using a single tool, eliminating the need to switch between different websites or applications.
+                    {t("whyChooseUs.f4Desc")}
                   </p>
                 </div>
               </div>
@@ -633,10 +611,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full px-4 lg:px-0" data-node-id="50:461">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="50:462">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.1rem,4vw,1.5rem)]" data-node-id="50:463">
-              More Reasons to Choose Our Platform
+              {t("moreReasons.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[614px]" data-node-id="50:464">
-              Discover additional advantages that make our platform a reliable and convenient choice for downloading content from multiple social media platforms.
+              {t("moreReasons.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col lg:flex-row gap-[20px] items-start relative shrink-0 w-full" data-node-id="50:551">
@@ -649,11 +627,11 @@ export default function Desktop() {
                   <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full min-w-0" data-node-id="50:470">
                     <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="50:471">
                       <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px]" data-node-id="50:472">
-                        Smooth and Hassle-Free Experience
+                        {t("moreReasons.r1Title")}
                       </p>
                     </div>
                     <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="50:473">
-                      Our platform is designed to keep the process simple, allowing you to download content quickly without complicated steps, technical knowledge, or unnecessary interruptions.
+                      {t("moreReasons.r1Desc")}
                     </p>
                   </div>
                 </div>
@@ -664,11 +642,11 @@ export default function Desktop() {
                   <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full min-w-0" data-node-id="50:520">
                     <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="50:521">
                       <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px]" data-node-id="50:522">
-                        Safe and Trustworthy Environment
+                        {t("moreReasons.r2Title")}
                       </p>
                     </div>
                     <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="50:523">
-                      We prioritize user safety by ensuring secure processing and maintaining transparency, so you can use the service confidently without concerns about privacy or risks.
+                      {t("moreReasons.r2Desc")}
                     </p>
                   </div>
                 </div>
@@ -679,11 +657,11 @@ export default function Desktop() {
                   <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full min-w-0" data-node-id="50:477">
                     <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="50:478">
                       <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="50:479">
-                        Consistent Performance You Can Rely On
+                        {t("moreReasons.r3Title")}
                       </p>
                     </div>
                     <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="50:480">
-                      With optimized technology and stable performance, you can expect dependable results every time you download content, regardless of the platform or device you use.
+                      {t("moreReasons.r3Desc")}
                     </p>
                   </div>
                 </div>
@@ -698,11 +676,11 @@ export default function Desktop() {
                   <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full min-w-0" data-node-id="50:530">
                     <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="50:531">
                       <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px]" data-node-id="50:532">
-                        Wide Platform Coverage
+                        {t("moreReasons.r4Title")}
                       </p>
                     </div>
                     <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="50:533">
-                      Access downloads from a large number of social media platforms in one place, giving you flexibility without needing multiple tools or websites.
+                      {t("moreReasons.r4Desc")}
                     </p>
                   </div>
                 </div>
@@ -713,11 +691,11 @@ export default function Desktop() {
                   <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full min-w-0" data-node-id="50:537">
                     <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="50:538">
                       <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px]" data-node-id="50:539">
-                        No Limits or Restrictions
+                        {t("moreReasons.r5Title")}
                       </p>
                     </div>
                     <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="50:540">
-                      Enjoy the freedom to download content whenever you want, without daily limits, subscriptions, or locked features that interrupt your experience.
+                      {t("moreReasons.r5Desc")}
                     </p>
                   </div>
                 </div>
@@ -728,11 +706,11 @@ export default function Desktop() {
                   <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full min-w-0" data-node-id="50:544">
                     <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="50:545">
                       <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="50:546">
-                        Accessible Anytime, Anywhere
+                        {t("moreReasons.r6Title")}
                       </p>
                     </div>
                     <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="50:547">
-                      Whether you are at home, at work, or on the move, you can rely on our platform to work smoothly across devices with consistent performance.
+                      {t("moreReasons.r6Desc")}
                     </p>
                   </div>
                 </div>
@@ -743,23 +721,23 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full px-4 lg:px-0" data-node-id="12:454">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center" data-node-id="12:455">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1rem,4vw,1.5rem)]" data-node-id="12:456">
-              Why Choose Our Free Social Media Downloader
+              {t("comparison.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[570px]" data-node-id="12:457">
-              See how our platform stands out with faster speeds, more supported platforms, and a secure experience without hidden costs or data tracking.
+              {t("comparison.subtitle")}
             </p>
           </div>
           <div className="w-full">
             <div className="w-full max-w-[880px] mx-auto border border-[#d1d3d9] rounded-[12px] overflow-hidden bg-white">
               <div className="grid grid-cols-3 min-h-[48px] bg-[#f7f7f7] border-b border-[#d1d3d9]">
                 <div className="px-4 flex items-center">
-                  <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold text-[#404040] text-[14px]">Features</p>
+                  <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold text-[#404040] text-[14px]">{t("comparison.features")}</p>
                 </div>
                 <div className="px-4 flex items-center justify-center bg-[#f7f4fe] border-x-2 border-t-2 border-[#6f40dd] rounded-tl-[12px] rounded-tr-[12px]">
-                  <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold text-[#404040] text-[14px] text-center">Brand Name</p>
+                  <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold text-[#404040] text-[14px] text-center">{t("comparison.us")}</p>
                 </div>
                 <div className="px-2 sm:px-4 flex items-center justify-center">
-                  <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold text-[#404040] text-[14px] text-center">Other Downloaders</p>
+                  <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold text-[#404040] text-[14px] text-center">{t("comparison.others")}</p>
                 </div>
               </div>
 
@@ -814,10 +792,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full max-w-[1280px] px-4 lg:px-0" data-node-id="10:348">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="10:94">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.1rem,4vw,1.5rem)]" data-node-id="10:95">
-              All Your Favorite Platforms in One Place
+              {t("platformGrid.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[457px]" data-node-id="10:96">
-              Access a wide range of social media download options with a single tool designed for convenience and flexibility.
+              {t("platformGrid.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col gap-[32px] items-start relative shrink-0 w-full" data-node-id="10:347">
@@ -982,19 +960,19 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full max-w-[1155px] px-4 lg:px-0" data-node-id="50:611">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full max-w-[855px]" data-node-id="50:612">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.125rem,4vw,1.5rem)] w-full" data-node-id="50:613">
-              Our Purpose
+              {t("ourPurpose.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[660px]" data-node-id="50:614">
-              Making content downloads simple, accessible, and reliable for everyone, everywhere.
+              {t("ourPurpose.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col lg:flex-row gap-[24px] lg:gap-[155px] items-center justify-center relative shrink-0 w-full" data-node-id="50:615">
             <div className="content-stretch flex flex-col font-['Inter:Regular',sans-serif] font-normal gap-[15px] items-start leading-[28px] not-italic relative shrink-0 text-[#404040] text-[16px] w-full lg:w-[612px]" data-node-id="50:616">
               <p className="relative shrink-0 w-full" data-node-id="50:617">
-                Our purpose is to provide users with a fast, convenient, and trustworthy way to download content from multiple social media platforms without complications. We aim to remove barriers such as subscriptions, technical complexity, and privacy concerns by offering a solution that is easy to use and accessible to everyone. By focusing on speed, simplicity, and security, we strive to create a platform that people can rely on whenever they need quick access to their favorite online content.
+                {t("ourPurpose.p1")}
               </p>
               <p className="relative shrink-0 w-full" data-node-id="50:618">
-                We are committed to delivering consistent performance, high-quality results, and a secure environment where users can feel confident while downloading content. Our goal is not only to provide a useful tool but also to build a reliable solution that people can depend on whenever they need quick access to their favorite media. Through continuous improvement and user-focused innovation, we aim to make the downloading experience smoother, faster, and more accessible for users around the world.
+                {t("ourPurpose.p2")}
               </p>
             </div>
             <div className="flex flex-[1_0_0] flex-row items-center self-stretch">
@@ -1013,10 +991,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center justify-center relative shrink-0 w-full max-w-[1064px] px-4 lg:px-0" data-name="Section" data-node-id="51:643">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="51:644">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.125rem,4vw,1.5rem)]" data-node-id="51:645">
-              Powerful Features for Fast and Easy Downloads
+              {t("features.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[614px]" data-node-id="51:646">
-              Everything you need to download content from multiple social media platforms in one place - free, secure, and designed for a smooth user experience.
+              {t("features.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full" data-node-id="51:647">
@@ -1025,11 +1003,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:650">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:651">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="51:652">
-                      Fast Processing
+                      {t("features.f1Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="51:653">
-                    Download videos, photos, reels, and posts within seconds using our high-speed processing technology.
+                    {t("features.f1Desc")}
                   </p>
                 </div>
               </div>
@@ -1037,11 +1015,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:655">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:656">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="51:657">
-                      22+ Supported Platforms
+                      {t("features.f2Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="51:658">
-                    Access a wide range of social media platforms without switching tools. One platform handles everything.
+                    {t("features.f2Desc")}
                   </p>
                 </div>
               </div>
@@ -1049,11 +1027,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:660">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:661">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="51:662">
-                      No Login Required
+                      {t("features.f3Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="51:663">
-                    Start downloading instantly without creating an account or sharing personal information.
+                    {t("features.f3Desc")}
                   </p>
                 </div>
               </div>
@@ -1063,11 +1041,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:666">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:667">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="51:668">
-                      Completely Free to Use
+                      {t("features.f4Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="51:669">
-                    Enjoy unlimited downloads with no subscriptions, hidden fees, or premium restrictions.
+                    {t("features.f4Desc")}
                   </p>
                 </div>
               </div>
@@ -1075,11 +1053,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:671">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:672">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="51:673">
-                      Secure and Private
+                      {t("features.f5Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="51:674">
-                    Your links and activity are never stored or tracked, ensuring a safe and confidential experience.
+                    {t("features.f5Desc")}
                   </p>
                 </div>
               </div>
@@ -1087,11 +1065,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="51:676">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="51:677">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="51:678">
-                      Unlimited Downloads
+                      {t("features.f6Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="51:679">
-                    Download as much content as you want without limits or daily restrictions.
+                    {t("features.f6Desc")}
                   </p>
                 </div>
               </div>
@@ -1101,16 +1079,15 @@ export default function Desktop() {
         <div className="bg-[#f5f3fb] border border-[#cfcfe4] border-solid h-auto lg:h-[398px] overflow-clip relative rounded-[24px] shrink-0 w-full max-w-[1320px] p-6 lg:p-0" data-node-id="16:563">
           <div className="lg:absolute content-stretch flex flex-col gap-[20px] items-start justify-center lg:left-[39.5px] not-italic lg:top-[39.5px] mb-6 lg:mb-0" data-node-id="16:564">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.1rem,4vw,1.5rem)] lg:text-center" data-node-id="16:565">
-              Why you can trust this platform
+              {t("trust.heading")}
             </p>
             <div className="font-['Inter:Medium',sans-serif] font-medium leading-[27px] relative shrink-0 text-[#505050] text-[16px] w-full lg:w-[614px]" data-node-id="16:566">
-              <p className="mb-0">Our platform is built to provide a seamless experience for downloading content from multiple social media platforms quickly and securely. We focus on speed, simplicity, and user privacy - so you can download what you need without complications or concerns.</p>
-              <p>We do not require login credentials, we do not store your links, and we do not track your downloads. Every process is designed to keep your activity private while delivering high-quality results in seconds.</p>
+              <p>{t("trust.description")}</p>
             </div>
           </div>
           <div className="lg:absolute bg-[#6f40dd] content-stretch flex gap-[4px] items-center justify-center lg:left-[39.5px] px-[16px] py-[8px] rounded-[33px] lg:top-[317.5px] mb-6 lg:mb-0" data-node-id="6:350">
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[16px] text-white whitespace-nowrap" data-node-id="6:351">
-              Learn more about privacy
+              {t("trust.learnMore")}
             </p>
             <svg viewBox="0 0 24 24" className="relative shrink-0 size-[18px] text-white" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
               <path d="M10 7L15 12L10 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -1124,7 +1101,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:580">
-                No Login Required
+                {t("trust.check1")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:582">
@@ -1134,7 +1111,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:588">
-                No Data Stored
+                {t("trust.check2")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:589">
@@ -1144,7 +1121,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:595">
-                Secure Processing
+                {t("trust.check3")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:596">
@@ -1154,7 +1131,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:602">
-                Unlimited Downloads
+                {t("trust.check4")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:617">
@@ -1164,7 +1141,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:623">
-                No Hidden Charges
+                {t("trust.check5")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:624">
@@ -1174,7 +1151,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:630">
-                Safe and Private Experience
+                {t("trust.check6")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:610">
@@ -1184,7 +1161,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:616">
-                Trusted by Thousands of Users
+                {t("trust.check7")}
               </p>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-node-id="16:603">
@@ -1194,7 +1171,7 @@ export default function Desktop() {
                 </div>
               </div>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#505050] text-[16px] whitespace-nowrap" data-node-id="16:609">
-                Works Across Multiple Platforms
+                {t("trust.check8")}
               </p>
             </div>
           </div>
@@ -1202,10 +1179,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full max-w-[1130px] px-4 lg:px-0" data-node-id="29:262">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="27:725">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.125rem,4vw,1.5rem)]" data-node-id="27:726">
-              Benefits That Make Downloading Easier
+              {t("benefits.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[660px]" data-node-id="27:727">
-              Enjoy a faster, simpler, and more reliable way to download content from multiple social media platforms with a solution designed around your convenience and privacy.
+              {t("benefits.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col lg:flex-row gap-[20px] items-stretch lg:items-center relative shrink-0 w-full" data-node-id="29:261">
@@ -1217,11 +1194,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="27:731">
                   <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="27:732">
                     <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px] whitespace-nowrap" data-node-id="27:733">
-                      Save Time with Instant Downloads
+                      {t("benefits.b1Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="27:734">
-                    Our platform is optimized for speed, allowing you to download content within seconds without complicated steps or delays. This means you can quickly access the media you need without wasting time navigating multiple tools or waiting for slow processing.
+                    {t("benefits.b1Desc")}
                   </p>
                 </div>
               </div>
@@ -1236,11 +1213,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="27:747">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="27:748">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="27:749">
-                      Enjoy Unlimited Access Without Restrictions
+                      {t("benefits.b3Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="27:750">
-                    You can download as much content as you want without facing daily limits, subscriptions, or hidden fees. This flexibility ensures that both casual users and frequent downloaders can rely on the platform whenever they need it.
+                    {t("benefits.b3Desc")}
                   </p>
                 </div>
               </div>
@@ -1256,11 +1233,11 @@ export default function Desktop() {
               <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="27:736">
                 <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="27:737">
                   <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px] whitespace-nowrap" data-node-id="27:738">
-                    Download Anytime on Any Device
+                    {t("benefits.b2Title")}
                   </p>
                 </div>
                 <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="27:739">
-                  Our platform works smoothly across smartphones, tablets, and desktop devices, giving you the freedom to download content wherever you are. Whether you are at home or on the go, you can rely on the same fast and easy experience.
+                  {t("benefits.b2Desc")}
                 </p>
               </div>
               <div className="h-auto lg:h-[393px] relative rounded-[20px] shrink-0 w-full lg:w-[362px] aspect-[362/393] lg:aspect-auto" data-name="image 13" data-node-id="29:257">
@@ -1281,11 +1258,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="27:741">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="27:742">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="27:743">
-                      Stay Secure and Protect Your Privacy
+                      {t("benefits.b4Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="27:744">
-                    We prioritize your privacy by ensuring that no personal information, download history, or links are stored on our servers. This allows you to use the platform confidently, knowing your activity remains safe and confidential.
+                    {t("benefits.b4Desc")}
                   </p>
                 </div>
               </div>
@@ -1300,11 +1277,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="27:757">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="27:758">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="27:759">
-                      Access Multiple Platforms in One Place
+                      {t("benefits.b5Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="27:760">
-                    Instead of switching between different tools for different platforms, you can manage all your downloads from a single website. This convenience simplifies your workflow and provides a consistent experience across various content sources.
+                    {t("benefits.b5Desc")}
                   </p>
                 </div>
               </div>
@@ -1314,10 +1291,10 @@ export default function Desktop() {
         <div className="content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full max-w-[1228px] px-4 lg:px-0" data-node-id="45:371">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="45:372">
             <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.1rem,4vw,1.5rem)]" data-node-id="45:373">
-              What You Can Expect From Us
+              {t("expect.title")}
             </p>
             <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[560px]" data-node-id="45:374">
-              We are committed to delivering a seamless downloading experience with speed, reliability, and privacy at the core of everything we offer.
+              {t("expect.subtitle")}
             </p>
           </div>
           <div className="content-stretch flex flex-col lg:flex-row gap-[20px] items-stretch lg:items-center relative shrink-0 w-full" data-node-id="45:375">
@@ -1328,10 +1305,10 @@ export default function Desktop() {
                 </div>
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="45:380">
                   <div className="content-stretch flex items-center relative shrink-0 w-full" data-node-id="45:381">
-                    <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px] whitespace-nowrap" data-node-id="45:382">{` Fast and Efficient Performance`}</p>
+                    <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[#404040] text-[16px] whitespace-nowrap" data-node-id="45:382">{t("expect.i1Title")}</p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="45:383">
-                    Enjoy quick processing speeds that allow you to download content within seconds without unnecessary delays or interruptions.
+                    {t("expect.i1Desc")}
                   </p>
                 </div>
               </div>
@@ -1346,11 +1323,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="45:387">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="45:388">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="45:389">
-                      Wide Platform Support
+                      {t("expect.i4Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="45:390">
-                    Download content from various social media platforms in one place without switching between different tools or services.
+                    {t("expect.i4Desc")}
                   </p>
                 </div>
               </div>
@@ -1366,10 +1343,10 @@ export default function Desktop() {
                 </div>
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="45:403">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="45:404">
-                    <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="45:405">{` Strong Privacy Protection`}</p>
+                    <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="45:405">{t("expect.i2Title")}</p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="45:406">
-                    Your links and activity remain private, as we do not store personal data or track your downloads while using the platform.
+                    {t("expect.i2Desc")}
                   </p>
                 </div>
               </div>
@@ -1384,11 +1361,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="45:410">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="45:411">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="45:412">
-                      Consistent Experience on All Devices
+                      {t("expect.i5Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="45:413">
-                    Use the platform smoothly across mobile phones, tablets, and desktops with a consistent and responsive experience.
+                    {t("expect.i5Desc")}
                   </p>
                 </div>
               </div>
@@ -1405,11 +1382,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="45:423">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="45:424">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="45:425">
-                      Completely Free Access
+                      {t("expect.i3Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="45:426">
-                    Access all features without subscriptions or hidden charges, giving you unlimited downloads whenever you need them.
+                    {t("expect.i3Desc")}
                   </p>
                 </div>
               </div>
@@ -1424,11 +1401,11 @@ export default function Desktop() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full" data-node-id="45:430">
                   <div className="content-stretch flex items-center justify-center relative shrink-0 w-full" data-node-id="45:431">
                     <p className="flex-[1_0_0] font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[22px] min-h-px min-w-px not-italic relative text-[#404040] text-[16px]" data-node-id="45:432">
-                      Reliable and User-Friendly Design
+                      {t("expect.i6Title")}
                     </p>
                   </div>
                   <p className="font-['Inter:Regular',sans-serif] font-normal leading-[24px] not-italic relative shrink-0 text-[#606060] text-[16px] w-full" data-node-id="45:433">
-                    Our interface is designed to be easy to use, ensuring a smooth and dependable experience for both new and returning users.
+                    {t("expect.i6Desc")}
                   </p>
                 </div>
               </div>
@@ -1439,10 +1416,10 @@ export default function Desktop() {
           <div className="content-stretch flex flex-col items-center relative shrink-0 w-full" data-node-id="22:140">
             <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full" data-node-id="22:141">
               <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[clamp(1.1rem,4vw,1.5rem)]" data-node-id="22:142">
-                Frequently Asked Questions
+                {t("faq.title")}
               </p>
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[28px] relative shrink-0 text-[#404040] text-[16px]" data-node-id="22:143">
-                Quick answers to common questions about prompts, access, and usage.
+                {t("faq.subtitle")}
               </p>
             </div>
           </div>
@@ -1493,53 +1470,53 @@ export default function Desktop() {
         <div className="bg-[#f4f1f8] content-stretch flex flex-col gap-[40px] items-center relative shrink-0 w-full px-4 lg:px-0" data-node-id="27:679">
           <div className="content-stretch flex flex-col gap-[12px] items-center not-italic relative shrink-0 text-center w-full max-w-[563px]" data-node-id="27:680">
             <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[clamp(1.1rem,4vw,1.5rem)]" data-node-id="27:681">
-              <p className="leading-[normal]">Help Us Improve</p>
+              <p className="leading-[normal]">{t("reviewForm.title")}</p>
             </div>
             <p className="font-['Inter:Regular',sans-serif] font-normal leading-[25.6px] relative shrink-0 text-[#404040] text-[16px] w-full max-w-[448px]" data-node-id="27:682">
-              Let us know what you love and what we can do better. Your feedback helps us enhance our platform for everyone.
+              {t("reviewForm.subtitle")}
             </p>
           </div>
           <div className="bg-[#ece8f5] content-stretch flex flex-col gap-[40px] items-center overflow-clip px-4 lg:px-[24px] py-[40px] relative rounded-[20px] shrink-0 w-full max-w-[660px]" data-node-id="27:684">
             <p className="font-['Figtree:SemiBold',sans-serif] font-semibold leading-[normal] relative shrink-0 text-[#2d2d2d] text-[20px] text-center" data-node-id="27:685">
-              Leave a Review
+              {t("reviewForm.heading")}
             </p>
             <div className="w-full flex flex-col gap-5" data-node-id="27:686">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 w-full" data-node-id="27:689">
                 <label className="w-full flex flex-col gap-2" data-node-id="27:690">
-                  <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">Your Name*</span>
+                  <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">{t("reviewForm.name")}*</span>
                   <input
                     type="text"
                     className="w-full h-12 rounded-[8px] bg-white border border-[#d1d3d9] px-3 text-[#404040] text-[14px] outline-none"
                     placeholder=""
-                    aria-label="Your Name"
+                    aria-label={t("reviewForm.name")}
                     data-node-id="27:692"
                   />
                 </label>
                 <label className="w-full flex flex-col gap-2" data-node-id="27:694">
-                  <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">Your Email*</span>
+                  <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">{t("reviewForm.email")}*</span>
                   <input
                     type="email"
                     className="w-full h-12 rounded-[8px] bg-white border border-[#d1d3d9] px-3 text-[#404040] text-[14px] outline-none"
                     placeholder=""
-                    aria-label="Your Email"
+                    aria-label={t("reviewForm.email")}
                     data-node-id="27:696"
                   />
                 </label>
               </div>
 
               <label className="w-full flex flex-col gap-2" data-node-id="27:698">
-                <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">Your message</span>
+                <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">{t("reviewForm.placeholder")}</span>
                 <textarea
                   className="w-full h-40 rounded-[12px] bg-white border border-[#d1d3d9] px-3 py-2 text-[#404040] text-[14px] leading-[20px] outline-none resize-none"
-                  placeholder="Type your message here"
-                  aria-label="Your message"
+                  placeholder={t("reviewForm.placeholder")}
+                  aria-label={t("reviewForm.placeholder")}
                   data-node-id="27:701"
                 />
               </label>
             </div>
             <div className="content-stretch flex flex-col gap-[var(--m,12px)] items-center justify-center relative shrink-0 w-full" data-node-id="27:703">
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#606060] text-[14px] text-center w-full" data-node-id="27:704">
-                Your Rating*
+                {t("reviewForm.rating")}*
               </p>
               <div className="content-stretch flex gap-[var(--xxs,6px)] items-center justify-center relative shrink-0 w-full" data-node-id="27:705">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -1559,7 +1536,7 @@ export default function Desktop() {
             </div>
             <div className="bg-[#6f40dd] content-stretch flex items-center justify-center px-[16px] py-[12px] relative rounded-[33px] shrink-0 w-full" data-node-id="27:719">
               <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[16px] text-white whitespace-nowrap" data-node-id="27:720">
-                Send Review
+                {t("reviewForm.submit")}
               </p>
             </div>
           </div>
@@ -1570,50 +1547,26 @@ export default function Desktop() {
               Logo
             </p>
             <p className="lg:absolute font-['Inter:Regular',sans-serif] font-normal leading-[24px] lg:left-[64px] not-italic text-[#1d1d1d] text-[14px] lg:top-[111.5px] w-full lg:w-[469px] mb-6 lg:mb-0" data-node-id="22:196">
-              Designed for creators and teams, this platform provides structured, high-performing prompts for AI image generation. Discover, reuse, and apply prompts that improve output quality and reduce trial and error.
+              {t("footer.description")}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:block gap-6 lg:gap-0 mb-6 lg:mb-0">
               <div className="lg:absolute content-stretch flex flex-col gap-[8px] items-start leading-[24px] lg:left-[776px] not-italic lg:top-[63.5px]" data-node-id="22:186">
-                <p className="font-['Inter:Medium',sans-serif] font-medium relative shrink-0 text-[#1d1d1d] text-[16px]" data-node-id="22:187">
-                  Home
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:188">
-                  How it works
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:189">
-                  About us
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:190">
-                  Benefits
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:191">
-                  Why choose us
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="27:513">
-                  Features
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="27:514">
-                  Faq
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="27:515">
-                  Reviews
-                </p>
+                <p className="font-['Inter:Medium',sans-serif] font-medium relative shrink-0 text-[#1d1d1d] text-[16px]" data-node-id="22:187">{t("footer.home")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:188">{t("footer.howItWorks")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:189">{t("footer.aboutUs")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:190">{t("footer.benefits")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:191">{t("footer.whyChooseUs")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="27:513">{t("footer.features")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="27:514">{t("footer.faq")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="27:515">{t("footer.reviews")}</p>
               </div>
               <div className="lg:absolute content-stretch flex flex-col gap-[8px] items-start leading-[24px] lg:left-[997px] not-italic lg:top-[63.5px]" data-node-id="22:192">
-                <p className="font-['Inter:Medium',sans-serif] font-medium relative shrink-0 text-[#1d1d1d] text-[16px]" data-node-id="22:193">
-                  Know About us
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:194">
-                  Terms and conditions
-                </p>
-                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:195">
-                  Privacy policy
-                </p>
+                <p className="font-['Inter:Medium',sans-serif] font-medium relative shrink-0 text-[#1d1d1d] text-[16px]" data-node-id="22:193">{t("footer.knowAboutUs")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:194">{t("footer.terms")}</p>
+                <p className="font-['Inter:Regular',sans-serif] font-normal relative shrink-0 text-[#404040] text-[14px]" data-node-id="22:195">{t("footer.privacy")}</p>
               </div>
               <div className="lg:absolute content-stretch flex flex-col gap-[16px] items-start lg:left-[1260px] lg:top-[65.5px] w-full lg:w-[116px]" data-node-id="22:197">
-                <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#1d1d1d] text-[16px]" data-node-id="22:198">
-                  Contact us
-                </p>
+                <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[#1d1d1d] text-[16px]" data-node-id="22:198">{t("footer.contactUs")}</p>
                 <div className="content-stretch flex gap-[12px] items-center relative shrink-0" data-node-id="22:199">
                   <div className="relative shrink-0 size-[20px]" data-name="Outline/Brands/Twitter" data-node-id="22:200">
                     <div className="absolute inset-[13.59%_5.21%_12.37%_5.21%]" data-name="Icon" data-node-id="I22:200;71:153">
@@ -1639,7 +1592,7 @@ export default function Desktop() {
               </div>
             </div>
             <p className="lg:absolute font-['Inter:Medium',sans-serif] font-medium leading-[normal] lg:left-[64px] not-italic text-[#606060] text-[14px] lg:top-[199.5px] text-center lg:text-left pt-4 lg:pt-0 border-t lg:border-t-0 border-[#ccc]" data-node-id="22:204">
-              @2026 brandname. All Right Reserved
+              {t("footer.rights")}
             </p>
           </div>
         </footer>

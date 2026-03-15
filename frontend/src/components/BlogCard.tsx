@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from "@/lib/i18n";
 
 export interface BlogCardProps {
   slug: string;
@@ -16,6 +19,7 @@ export default function BlogCard({
   date,
   image,
 }: BlogCardProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col gap-3 overflow-hidden rounded-2xl bg-white p-3">
       {/* Thumbnail */}
@@ -46,7 +50,7 @@ export default function BlogCard({
         href={`/blogs/${slug}`}
         className="flex h-10 w-full items-center justify-center rounded-full border border-primary text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
       >
-        Read More
+        {t("blog.readMore")}
       </Link>
     </div>
   );

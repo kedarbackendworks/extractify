@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
+
 interface DownloadProgressProps {
   /** Elapsed time in seconds */
   elapsedSeconds: number;
@@ -23,6 +25,7 @@ export default function DownloadProgress({
   onDownload,
   downloadReady = false,
 }: DownloadProgressProps) {
+  const { t } = useTranslation();
   const downloadedMB = downloadedBytes ? (downloadedBytes / (1024 * 1024)).toFixed(2) : null;
   const totalMB = totalBytes ? (totalBytes / (1024 * 1024)).toFixed(2) : null;
   const progressPercent = downloadedBytes && totalBytes ? Math.min((downloadedBytes / totalBytes) * 100, 100) : 0;
@@ -44,7 +47,7 @@ export default function DownloadProgress({
         {/* Content */}
         <div className="flex flex-1 flex-col gap-3 items-start justify-center w-full">
           <p className="text-[14px] sm:text-[16px] font-medium text-foreground">
-            Please wait ... Your document is downloading in {estimatedRemainingSeconds ?? elapsedSeconds} seconds
+            {t("download.waiting").replace("{seconds}", String(estimatedRemainingSeconds ?? elapsedSeconds))}
           </p>
 
           {/* Progress bar */}
@@ -59,7 +62,7 @@ export default function DownloadProgress({
           {/* Size info */}
           {downloadedMB && totalMB && (
             <p className="text-[14px] font-medium text-text-hint">
-              {downloadedMB}MB of {totalMB}MB
+              {t("download.sizeProgress").replace("{downloaded}", downloadedMB!).replace("{total}", totalMB!)}
             </p>
           )}
 
@@ -70,7 +73,7 @@ export default function DownloadProgress({
               onClick={onDownload}
               className="flex items-center justify-center rounded-[33px] bg-primary px-4 py-2 text-[14px] font-medium text-white hover:opacity-90 transition-opacity"
             >
-              Download
+              {t("download.button")}
             </button>
           )}
         </div>

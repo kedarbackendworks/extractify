@@ -191,10 +191,10 @@ export default function Navbar() {
                   onClick={() => setMobileView("main")}
                 >
                   <ArrowLeft className="h-5 w-5" />
-                  <span className="text-sm font-medium">Back</span>
+                  <span className="text-sm font-medium">{t("nav.back")}</span>
                 </button>
               ) : (
-                <span className="text-base font-semibold text-foreground">Menu</span>
+                <span className="text-base font-semibold text-foreground">{t("nav.menu")}</span>
               )}
               <button type="button" onClick={closeMobileMenu} aria-label="Close menu">
                 <X className="h-5 w-5 text-foreground" />
@@ -225,7 +225,7 @@ export default function Navbar() {
                   className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-[15px] font-medium text-foreground hover:bg-background"
                   onClick={() => setMobileView("languages")}
                 >
-                  <span>Language</span>
+                  <span>{t("nav.language")}</span>
                   <ChevronDown className="h-4 w-4 -rotate-90" />
                 </button>
               </div>

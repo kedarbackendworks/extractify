@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslation } from "@/lib/i18n";
 
 interface CloudflareCheckProps {
   onVerified: () => void;
@@ -10,6 +11,7 @@ interface CloudflareCheckProps {
 export default function CloudflareCheck({ onVerified, verified = false }: CloudflareCheckProps) {
   const [checked, setChecked] = useState(verified);
   const [verifying, setVerifying] = useState(false);
+  const { t } = useTranslation();
 
   const handleCheck = useCallback(() => {
     if (checked || verifying) return;
@@ -30,7 +32,7 @@ export default function CloudflareCheck({ onVerified, verified = false }: Cloudf
           type="button"
           onClick={handleCheck}
           className="flex items-center justify-center size-6 shrink-0"
-          aria-label="Verify you are human"
+          aria-label={t("cloudflare.verify")}
         >
           {checked ? (
             <span className="flex items-center justify-center size-[18px] rounded-[4px] bg-green">
@@ -50,7 +52,7 @@ export default function CloudflareCheck({ onVerified, verified = false }: Cloudf
           )}
         </button>
         <span className="text-[16px] font-medium text-text-muted whitespace-nowrap">
-          Verify you are human
+          {t("cloudflare.verify")}
         </span>
       </div>
       {/* Cloudflare logo */}

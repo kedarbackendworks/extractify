@@ -10,6 +10,7 @@ import CloudflareCheck from "@/components/CloudflareCheck";
 import DownloadProgress from "@/components/DownloadProgress";
 import { platformConfigs } from "@/lib/platforms";
 import { detectContentTab } from "@/lib/url-tab-detect";
+import { useTranslation } from "@/lib/i18n";
 import Hls from "hls.js";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
@@ -183,6 +184,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
   const { slug } = use(params);
   const searchParams = useSearchParams();
   const initialUrl = searchParams.get("url") || "";
+  const { t } = useTranslation();
 
   const platform = platformConfigs[slug];
 
@@ -191,6 +193,8 @@ export default function PlatformPage({ params }: PlatformPageProps) {
   }
 
   // Determine the best initial tab: query param > URL detection > first tab
+  const translatedTabs = platform.tabs.map((tab: string) => t(`platform.${slug}.tab.${tab}`));
+
   const queryTab = searchParams.get("tab");
   const detectedTab = initialUrl ? detectContentTab(initialUrl, slug) : null;
   const startTab =
@@ -456,20 +460,23 @@ export default function PlatformPage({ params }: PlatformPageProps) {
         <div className="flex items-center gap-3">
           <span className="shrink-0">{platform.icon}</span>
           <h1 className="text-[24px] sm:text-[32px] font-semibold text-foreground text-center leading-normal">
-            {platform.title}
+            {t(`platform.${slug}.title`)}
           </h1>
         </div>
         <p className="text-text-secondary text-[16px] sm:text-[20px] font-medium text-center max-w-[431px] leading-[24px] sm:leading-[28px]">
-          {platform.description}
+          {t(`platform.${slug}.description`)}
         </p>
       </div>
 
       {/* Content type tabs */}
       <div className="mb-10">
         <ContentTabs
-          tabs={platform.tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
+          tabs={translatedTabs}
+          activeTab={t(`platform.${slug}.tab.${activeTab}`)}
+          onTabChange={(translatedTab) => {
+            const idx = translatedTabs.indexOf(translatedTab);
+            if (idx !== -1) setActiveTab(platform.tabs[idx]);
+          }}
         />
       </div>
 
@@ -504,10 +511,10 @@ export default function PlatformPage({ params }: PlatformPageProps) {
                   <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
                   </svg>
-                  <span className="text-white/80 text-sm font-medium">Text Content</span>
+                  <span className="text-white/80 text-sm font-medium">{t("preview.textContent")}</span>
                 </div>
                 <pre className="whitespace-pre-wrap break-words text-white/90 text-base leading-7 font-sans">
-                  {downloadResult.description || "No text content available."}
+                  {downloadResult.description || t("preview.noText")}
                 </pre>
               </div>
             ) : isPdfContent && resolvedDownloadUrl ? (
@@ -565,7 +572,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
               )
             ) : (
               <div className="w-full h-full min-h-[414px] bg-[#525659] flex items-center justify-center">
-                <p className="text-white/60 text-sm">No Preview Available</p>
+                <p className="text-white/60 text-sm">{t("preview.noPreview")}</p>
               </div>
             )}
           </div>
@@ -573,10 +580,10 @@ export default function PlatformPage({ params }: PlatformPageProps) {
           {/* Details sidebar */}
           <div className="lg:w-[478px] flex flex-col gap-4">
             <h2 className="text-[20px] font-semibold text-foreground leading-7">
-              {downloadResult.title || "Extracted Content"}
+              {downloadResult.title || t("platform.extractedContent")}
             </h2>
             <p className="text-[16px] font-medium text-text-muted leading-7">
-              {downloadResult.description || "No description available."}
+              {downloadResult.description || t("platform.noDescription")}
             </p>
 
             {downloadResult.variants?.length > 1 && (
@@ -601,12 +608,12 @@ export default function PlatformPage({ params }: PlatformPageProps) {
             <div className="flex flex-col gap-2">
               {fileSizeText && (
                 <p className="text-[14px] font-medium text-text-muted">
-                  File size : {fileSizeText}
+                  {t("platform.fileSize")} : {fileSizeText}
                 </p>
               )}
               {(selectedVariant?.format || downloadResult.content_type) && (
                 <p className="text-[14px] font-medium text-text-muted">
-                  File type : {selectedVariant?.format || downloadResult.content_type}
+                  {t("platform.fileType")} : {selectedVariant?.format || downloadResult.content_type}
                 </p>
               )}
             </div>
@@ -621,7 +628,7 @@ export default function PlatformPage({ params }: PlatformPageProps) {
                 hasSelectedDownload ? "bg-primary hover:opacity-90" : "bg-primary/50 pointer-events-none"
               }`}
             >
-              {hasSelectedDownload ? "Download" : "No downloadable stream found"}
+              {hasSelectedDownload ? t("platform.download") : t("platform.noStream")}
             </a>
           </div>
         </div>

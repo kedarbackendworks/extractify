@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useTranslation } from "@/lib/i18n";
 
 type DetectionState = "pending" | "blocked" | "rechecking" | "clear";
 
@@ -138,6 +139,7 @@ export default function AdblockWall({
   const [shaking, setShaking] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const recheckBtnRef = useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
 
   // ── Initial detection (silent — no modal shown) ────────────────────
   useEffect(() => {
@@ -283,23 +285,20 @@ export default function AdblockWall({
               id="adwall-title"
               className="mb-3 text-xl font-semibold text-foreground sm:text-2xl"
             >
-              We noticed you&apos;re using an ad blocker
+              {t("adblock.title")}
             </h2>
 
             <p className="mb-2 text-sm leading-relaxed text-text-secondary sm:text-base">
-              We rely on ad revenue to keep Extractify free for everyone. Ads
-              help us cover server costs and continue building new features.
+              {t("adblock.message1")}
             </p>
             <p className="mb-8 text-sm leading-relaxed text-text-secondary sm:text-base">
-              Please consider disabling your ad blocker for this site — it
-              makes a real difference. Thank you for your support!
+              {t("adblock.message2")}
             </p>
 
             {/* Error message */}
             {recheckError && (
               <p className="mb-4 text-sm font-medium text-red-600" role="alert">
-                We still can&apos;t detect any change — please fully disable
-                your ad blocker and try again.
+                {t("adblock.error")}
               </p>
             )}
 
@@ -332,10 +331,10 @@ export default function AdblockWall({
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                     />
                   </svg>
-                  Checking…
+                  {t("adblock.checking")}
                 </>
               ) : (
-                "I've disabled it — Refresh"
+                t("adblock.refresh")
               )}
             </button>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "@/lib/i18n";
 
 interface TableOfContentsProps {
   sections: { heading: string }[];
@@ -8,6 +9,7 @@ interface TableOfContentsProps {
 
 export default function TableOfContents({ sections }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -38,7 +40,7 @@ export default function TableOfContents({ sections }: TableOfContentsProps) {
 
   return (
     <div className="flex flex-col gap-[19px]">
-      <h3 className="text-xl font-semibold text-foreground">In this article</h3>
+      <h3 className="text-xl font-semibold text-foreground">{t("toc.heading")}</h3>
       <nav className="flex flex-col">
         {sections.map((section, i) => {
           const isActive = activeId === `section-${i}`;
