@@ -87,10 +87,10 @@ def find_og_tag(html: str, prop: str) -> Optional[str]:
     as well as ``name="og:…"`` variants.
     """
     patterns = [
-        rf'property="{prop}"\s+content="([^"]*)"',
-        rf'content="([^"]*)"\s+property="{prop}"',
-        rf'name="{prop}"\s+content="([^"]*)"',
-        rf'content="([^"]*)"\s+name="{prop}"',
+        rf'<meta[^>]*property="{prop}"[^>]*content="([^"]*)"[^>]*>',
+        rf'<meta[^>]*content="([^"]*)"[^>]*property="{prop}"[^>]*>',
+        rf'<meta[^>]*name="{prop}"[^>]*content="([^"]*)"[^>]*>',
+        rf'<meta[^>]*content="([^"]*)"[^>]*name="{prop}"[^>]*>',
     ]
     for pat in patterns:
         m = re.search(pat, html, re.IGNORECASE)
