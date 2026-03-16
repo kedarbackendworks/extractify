@@ -13,6 +13,7 @@ from app.routes.extract import router as extract_router
 from app.routes.health import router as health_router
 from app.routes.download import router as download_router
 from app.routes.files import router as files_router
+from app.routes.reviews import router as reviews_router
 from app.utils.browser import browser_pool
 from app.utils.http_client import close_http_client
 
@@ -51,6 +52,7 @@ app.include_router(health_router)
 app.include_router(extract_router)
 app.include_router(download_router)
 app.include_router(files_router)
+app.include_router(reviews_router)
 
 
 if __name__ == "__main__":

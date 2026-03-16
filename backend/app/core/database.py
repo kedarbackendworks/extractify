@@ -11,6 +11,7 @@ from app.core.config import settings
 # We import all document models so Beanie can register them.
 from app.models.job import Job
 from app.models.user import User
+from app.models.review import Review
 
 logger = structlog.get_logger()
 
@@ -30,7 +31,7 @@ async def connect_db() -> None:
         await _client.admin.command("ping")
         await init_beanie(
             database=_client[settings.MONGO_DB_NAME],
-            document_models=[Job, User],
+            document_models=[Job, User, Review],
         )
         _connected = True
         logger.info("mongodb_connected", uri=settings.MONGO_URI, db=settings.MONGO_DB_NAME)

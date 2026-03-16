@@ -294,6 +294,54 @@ export default function SharedLandingContent() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number>(0);
   const { t } = useTranslation();
 
+  // Review Form State
+  const [reviewName, setReviewName] = useState("");
+  const [reviewEmail, setReviewEmail] = useState("");
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const handleReviewSubmit = async () => {
+    if (!reviewName || !reviewEmail || !reviewText || reviewRating === 0) {
+      setReviewMessage({ type: "error", text: "Please fill in all fields and select a rating." });
+      return;
+    }
+    
+    setIsSubmittingReview(true);
+    setReviewMessage(null);
+
+    try {
+      // Assuming Next.js rewrites /api or you have CORS set up accurately. 
+      // Pointing to standard backend URL matching other apps or relative if routed
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${API_BASE_URL}/api/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: reviewName,
+          email: reviewEmail,
+          review_text: reviewText,
+          rating: reviewRating,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to submit review");
+
+      setReviewMessage({ type: "success", text: "Thank you for your feedback!" });
+      setReviewName("");
+      setReviewEmail("");
+      setReviewText("");
+      setReviewRating(0);
+    } catch (err) {
+      setReviewMessage({ type: "error", text: "Something went wrong. Please try again." });
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
+
   const faqItems = [
     { question: t("faq.q1"), answer: t("faq.a1") },
     { question: t("faq.q2"), answer: t("faq.a2") },
@@ -1435,34 +1483,17 @@ export default function SharedLandingContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 w-full" data-node-id="27:689">
                 <label className="w-full flex flex-col gap-2" data-node-id="27:690">
                   <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">{t("reviewForm.name")}*</span>
-                  <input
-                    type="text"
-                    className="w-full h-12 rounded-[8px] bg-white border border-[#d1d3d9] px-3 text-[#404040] text-[14px] outline-none"
-                    placeholder=""
-                    aria-label={t("reviewForm.name")}
-                    data-node-id="27:692"
-                  />
+                  <input type="text" className="w-full h-12 rounded-[8px] bg-white border border-[#d1d3d9] px-3 text-[#404040] text-[14px] outline-none disabled:opacity-50" placeholder="" aria-label={t("reviewForm.name")} value={reviewName} onChange={(e) => setReviewName(e.target.value)} disabled={isSubmittingReview} data-node-id="27:692" />
                 </label>
                 <label className="w-full flex flex-col gap-2" data-node-id="27:694">
                   <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">{t("reviewForm.email")}*</span>
-                  <input
-                    type="email"
-                    className="w-full h-12 rounded-[8px] bg-white border border-[#d1d3d9] px-3 text-[#404040] text-[14px] outline-none"
-                    placeholder=""
-                    aria-label={t("reviewForm.email")}
-                    data-node-id="27:696"
-                  />
+                  <input type="email" className="w-full h-12 rounded-[8px] bg-white border border-[#d1d3d9] px-3 text-[#404040] text-[14px] outline-none disabled:opacity-50" placeholder="" aria-label={t("reviewForm.email")} value={reviewEmail} onChange={(e) => setReviewEmail(e.target.value)} disabled={isSubmittingReview} data-node-id="27:696" />
                 </label>
               </div>
 
               <label className="w-full flex flex-col gap-2" data-node-id="27:698">
                 <span className="font-['Inter:Medium',sans-serif] font-medium text-[#606060] text-[14px] leading-[20px]">{t("reviewForm.placeholder")}</span>
-                <textarea
-                  className="w-full h-40 rounded-[12px] bg-white border border-[#d1d3d9] px-3 py-2 text-[#404040] text-[14px] leading-[20px] outline-none resize-none"
-                  placeholder={t("reviewForm.placeholder")}
-                  aria-label={t("reviewForm.placeholder")}
-                  data-node-id="27:701"
-                />
+                <textarea className="w-full h-40 rounded-[12px] bg-white border border-[#d1d3d9] px-3 py-2 text-[#404040] text-[14px] leading-[20px] outline-none resize-none disabled:opacity-50" placeholder={t("reviewForm.placeholder")} aria-label={t("reviewForm.placeholder")} value={reviewText} onChange={(e) => setReviewText(e.target.value)} disabled={isSubmittingReview} data-node-id="27:701" />
               </label>
             </div>
             <div className="content-stretch flex flex-col gap-[var(--m,12px)] items-center justify-center relative shrink-0 w-full" data-node-id="27:703">
@@ -1470,26 +1501,52 @@ export default function SharedLandingContent() {
                 {t("reviewForm.rating")}*
               </p>
               <div className="content-stretch flex gap-[var(--xxs,6px)] items-center justify-center relative shrink-0 w-full" data-node-id="27:705">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <button key={i} type="button" className="size-[26px] shrink-0" aria-label={`Rate ${i + 1} star`}>
-                    <svg viewBox="0 0 26 26" className="block size-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M13 3.2L15.9 9.1L22.4 10.1L17.7 14.7L18.8 21.2L13 18.1L7.2 21.2L8.3 14.7L3.6 10.1L10.1 9.1L13 3.2Z"
-                        fill="#9A9AA6"
-                        stroke="#83838F"
-                        strokeWidth="1"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                ))}
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const ratingValue = i + 1;
+                  const isActive = ratingValue <= (hoverRating || reviewRating);
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className="size-[26px] shrink-0 transition-transform hover:scale-110 focus:outline-none"
+                      aria-label={`Rate ${ratingValue} star`}
+                      onClick={() => setReviewRating(ratingValue)}
+                      onMouseEnter={() => setHoverRating(ratingValue)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      disabled={isSubmittingReview}
+                    >
+                      <svg viewBox="0 0 26 26" className="block size-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M13 3.2L15.9 9.1L22.4 10.1L17.7 14.7L18.8 21.2L13 18.1L7.2 21.2L8.3 14.7L3.6 10.1L10.1 9.1L13 3.2Z"
+                          fill={isActive ? "#6f40dd" : "#9A9AA6"}
+                          stroke={isActive ? "#6f40dd" : "#83838F"}
+                          strokeWidth="1"
+                          strokeLinejoin="round"
+                          className="transition-colors duration-200"
+                        />
+                      </svg>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <div className="bg-[#6f40dd] content-stretch flex items-center justify-center px-[16px] py-[12px] relative rounded-[33px] shrink-0 w-full" data-node-id="27:719">
+            {reviewMessage && (
+              <div className={`w-full p-3 rounded-lg text-sm text-center ${reviewMessage.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                {reviewMessage.text}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={handleReviewSubmit}
+              disabled={isSubmittingReview}
+              className="bg-[#6f40dd] hover:bg-[#5b32ba] transition-colors content-stretch flex items-center justify-center px-[16px] py-[12px] relative rounded-[33px] shrink-0 w-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              data-node-id="27:719"
+            >
               <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[16px] text-white whitespace-nowrap" data-node-id="27:720">
-                {t("reviewForm.submit")}
+                {isSubmittingReview ? "Submitting..." : t("reviewForm.submit")}
               </p>
-            </div>
+            </button>
           </div>
         </div>
         <footer className="bg-[#f4f1f8] border-[#ccc] border-solid border-t h-auto lg:h-[376px] overflow-visible lg:overflow-clip relative shrink-0 w-full px-4 lg:px-16 py-8 lg:py-0" data-name="FAQ" data-node-id="22:184">
