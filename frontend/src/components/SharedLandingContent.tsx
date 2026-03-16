@@ -315,7 +315,7 @@ export default function SharedLandingContent() {
     try {
       // Assuming Next.js rewrites /api or you have CORS set up accurately. 
       // Pointing to standard backend URL matching other apps or relative if routed
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
       const res = await fetch(`${API_BASE_URL}/api/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
