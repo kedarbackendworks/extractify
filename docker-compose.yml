@@ -1,47 +1,13 @@
-# ============================================================
-# Extractify – Production Docker Compose
-# Usage: docker compose up -d
-# ============================================================
-
 services:
-  # ── MongoDB ──────────────────────────────────────
-  mongo:
-    image: mongo:7
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-extractify}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme}
-      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-extractify}
-    ports:
-      - "${MONGO_PORT:-27017}:27017"
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - app-network
-    healthcheck:
-      # mongosh ships with mongo:7 image
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-
   # ── FastAPI Backend ──────────────────────────────
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: .env
-    environment:
-      # Override MONGO_URI to use the Docker network service name.
-      # The credentials match the mongo service above.
-      MONGO_URI: mongodb://${MONGO_USER:-extractify}:${MONGO_PASSWORD:-changeme}@mongo:27017/${MONGO_DB_NAME:-extractify}?authSource=admin
+    env_file: .env          # Atlas URI will be picked from here now
     ports:
       - "${BACKEND_PORT:-8000}:8000"
-    depends_on:
-      mongo:
-        condition: service_healthy
     networks:
       - app-network
     healthcheck:
@@ -57,9 +23,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        # Baked into the JS bundle at build time.
-        # In production, set this to your public domain (e.g. https://api.example.com).
-        # At runtime in the browser, this is where fetch() calls go.
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
     restart: unless-stopped
     ports:
@@ -69,10 +32,6 @@ services:
         condition: service_healthy
     networks:
       - app-network
-
-volumes:
-  mongo_data:
-    driver: local
 
 networks:
   app-network:
