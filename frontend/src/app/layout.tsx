@@ -32,7 +32,7 @@ export default function RootLayout({
       <head>
         <script
           src="https://quge5.com/88/tag.min.js"
-          data-zone="222376"
+          data-zone="222439"
           data-cfasync="false"
           async
         />
