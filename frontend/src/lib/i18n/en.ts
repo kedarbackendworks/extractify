@@ -198,6 +198,18 @@ const en: Record<string, string> = {
   "faq.a5": "Yes, we always try to provide the highest quality available for each piece of content. You can choose from available quality options before downloading.",
   "faq.q6": "What should I do if a download isn't working?",
   "faq.a6": "Try refreshing the page and pasting the link again. Make sure the link is publicly accessible. If the issue persists, the platform may have recently changed its format — we update regularly to maintain compatibility.",
+  "faq.q7": "What file formats will I get?",
+  "faq.a7": "Downloaded files vary by content type. Videos are typically MP4, audio content as MP3, images as JPG/PNG, and documents in their original format. You'll see available format options before downloading, allowing you to choose what works best for you.",
+  "faq.q8": "Can I download on my phone or mobile device?",
+  "faq.a8": "Yes! Our platform is fully mobile-friendly and works on iOS and Android devices through your web browser. Simply open the link on your phone and follow the same paste-and-download process. No app installation needed.",
+  "faq.q9": "Is there a limit to how much I can download?",
+  "faq.a9": "No limits whatsoever. You can download as many items as you want, with no daily, weekly, or monthly restrictions. Our servers can handle unlimited concurrent downloads.",
+  "faq.q10": "Can I download content that's private or age-restricted?",
+  "faq.a10": "Our platform can only download publicly accessible content. Private accounts, age-restricted videos, or content behind paywalls cannot be downloaded. You can only download what you can view normally on the platform.",
+  "faq.q11": "How fast are the downloads?",
+  "faq.a11": "Download speed depends on your internet connection and the file size. Most standard videos download within seconds to minutes. For larger files, the process naturally takes longer. Your connection speed is the primary factor.",
+  "faq.q12": "Will the content still be available after I download it?",
+  "faq.a12": "Yes, downloading doesn't affect the original content on the platform. The creator's post remains exactly as it was. Our download is simply a copy made for your personal use.",
 
   // ── Review Form ─────────────────────────────────────────────
   "reviewForm.title": "Help Us Improve",

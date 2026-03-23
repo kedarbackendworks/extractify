@@ -49,6 +49,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </noscript>
           </>
         ) : null}
+        <Script 
+          src="https://quge5.com/88/tag.min.js" 
+          data-zone="222376" 
+          async
+          data-cfasync="false"
+          strategy="afterInteractive"
+        />
         <Providers>
           <AdblockWall>
             <Navbar />
