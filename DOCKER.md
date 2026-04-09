@@ -78,6 +78,21 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 | `docker compose exec mongo mongosh` | Open a MongoDB shell |
 | `docker compose restart backend` | Restart just the backend |
 
+### Automated Backend Tests (Pytest)
+
+Run backend tests with pytest inside the backend container:
+
+```bash
+docker compose up -d --build backend
+docker exec extractify-backend-1 pytest
+```
+
+Run a specific test file:
+
+```bash
+docker exec extractify-backend-1 pytest tests/download_security_test.py
+```
+
 ---
 
 ## MongoDB Access

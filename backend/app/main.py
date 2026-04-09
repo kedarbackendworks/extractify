@@ -52,14 +52,30 @@ _DEV_LOCAL_ORIGIN_REGEX = (
 
 allow_origin_regex = _DEV_LOCAL_ORIGIN_REGEX if settings.APP_ENV.lower() == "development" else None
 
+_ALLOWED_CORS_METHODS = ["GET", "POST", "OPTIONS", "HEAD"]
+_ALLOWED_CORS_HEADERS = [
+    "Accept",
+    "Authorization",
+    "Content-Type",
+    "Origin",
+    "Range",
+    "X-Requested-With",
+]
+_EXPOSE_CORS_HEADERS = [
+    "Content-Disposition",
+    "Content-Length",
+    "Content-Range",
+]
+
 # ── CORS ─────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_origin_regex=allow_origin_regex,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=_ALLOWED_CORS_METHODS,
+    allow_headers=_ALLOWED_CORS_HEADERS,
+    expose_headers=_EXPOSE_CORS_HEADERS,
 )
 
 # ── Routes ───────────────────────────────────────────
