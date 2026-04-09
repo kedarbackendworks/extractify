@@ -9,13 +9,15 @@ browser triggers a real file-save dialog.
 """
 
 import asyncio
+import ipaddress
 import os
 import re
+import socket
 import tempfile
 
 import httpx
 import structlog
-from urllib.parse import unquote, urlparse, quote
+from urllib.parse import unquote, urlparse, urljoin
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
@@ -23,30 +25,51 @@ logger = structlog.get_logger()
 
 router = APIRouter(prefix="/api", tags=["download"])
 
-# Allowed URL hosts to prevent open-redirect / SSRF abuse
-_ALLOWED_HOSTS_RE = re.compile(
-    r"(googlevideo\.com|youtube\.com|ytimg\.com|"
-    r"instagram\.com|fbcdn\.net|cdninstagram\.com|facebook\.com|"
-    r"tiktokcdn\.com|tiktokv\.com|musical\.ly|"
-    r"scdn\.co|soundcloud\.com|sndcdn\.com|media-streaming\.soundcloud\.cloud|"
-    r"twimg\.com|pbs\.twimg\.com|video\.twimg\.com|"
-    r"fxtwitter\.com|"
-    r"snapchat\.com|sc-cdn\.net|"
-    r"vimeo\.com|vimeocdn\.com|"
-    r"reddit\.com|redd\.it|redditmedia\.com|redgifs\.com|"
-    r"tumblr\.com|pinimg\.com|"
-    r"media\.licdn\.com|linkedin\.com|"
-    r"threads\.net|threads\.com|"
-    r"scribd\.com|html\.scribd\.com|imgv2[^.]*\.scribd\.com|"
-    r"slidesharecdn\.com|image\.slidesharecdn\.com|cdn\.slidesharecdn\.com|"
-    r"slideserve\.com|cdn\d*\.slideserve\.com|image\d*\.slideserve\.com|"
-    r"calameoassets\.com|ps\.calameoassets\.com|i\.calameoassets\.com|"
-    r"yumpu\.com|img\.yumpu\.com|assets\.yumpu\.com|image\.yumpu\.com|"
-    r"documents-public\.yumpu\.news|documents\.yumpu\.news|assets\.yumpu\.news|"
-    r"scontent|rr[0-9]---|"
-    r"akamaized\.net|cloudfront\.net|cdn\.)",
-    re.IGNORECASE,
+# URL safety policy: strict host allow-list + private-network/IP blocking.
+_ALLOWED_HOST_SUFFIXES = (
+    "googlevideo.com",
+    "youtube.com",
+    "ytimg.com",
+    "instagram.com",
+    "fbcdn.net",
+    "cdninstagram.com",
+    "facebook.com",
+    "tiktokcdn.com",
+    "tiktokv.com",
+    "musical.ly",
+    "scdn.co",
+    "soundcloud.com",
+    "sndcdn.com",
+    "media-streaming.soundcloud.cloud",
+    "twimg.com",
+    "fxtwitter.com",
+    "snapchat.com",
+    "sc-cdn.net",
+    "vimeo.com",
+    "vimeocdn.com",
+    "reddit.com",
+    "redd.it",
+    "redditmedia.com",
+    "redgifs.com",
+    "tumblr.com",
+    "pinimg.com",
+    "licdn.com",
+    "linkedin.com",
+    "threads.net",
+    "threads.com",
+    "scribd.com",
+    "slidesharecdn.com",
+    "slideserve.com",
+    "calameoassets.com",
+    "yumpu.com",
+    "yumpu.news",
+    "akamaized.net",
+    "cloudfront.net",
 )
+_ALLOWED_SCHEMES = {"http", "https"}
+_ALLOWED_PORTS = {None, 80, 443}
+_MAX_REDIRECTS = 5
+_DNS_SAFE_HOST_CACHE: dict[str, bool] = {}
 
 # Map of common extensions to MIME types for the Content-Type header
 _MIME_MAP = {
@@ -66,9 +89,109 @@ _MIME_MAP = {
 }
 
 
+def _is_allowed_host(hostname: str) -> bool:
+    return any(
+        hostname == suffix or hostname.endswith(f".{suffix}")
+        for suffix in _ALLOWED_HOST_SUFFIXES
+    )
+
+
+def _is_public_ip(ip_str: str) -> bool:
+    """Return True only for globally routable IP addresses."""
+    try:
+        return ipaddress.ip_address(ip_str).is_global
+    except ValueError:
+        return False
+
+
+async def _assert_safe_remote_url(raw_url: str) -> None:
+    """Validate scheme, host allow-list, and block private/internal IP targets."""
+    parsed = urlparse(raw_url.strip())
+
+    if parsed.scheme.lower() not in _ALLOWED_SCHEMES:
+        raise HTTPException(403, "Only http/https URLs are allowed.")
+    if not parsed.hostname:
+        raise HTTPException(403, "Invalid URL host.")
+    if parsed.username or parsed.password:
+        raise HTTPException(403, "URL credentials are not allowed.")
+    if parsed.port not in _ALLOWED_PORTS:
+        raise HTTPException(403, "URL port is not allowed.")
+
+    hostname = parsed.hostname.lower().rstrip(".")
+    if not _is_allowed_host(hostname):
+        raise HTTPException(
+            403,
+            "URL host is not in the allow-list. Only supported platform CDN URLs are permitted.",
+        )
+
+    # Fast-path cache for previously validated DNS names.
+    if _DNS_SAFE_HOST_CACHE.get(hostname):
+        return
+
+    # If hostname is already an IP literal, validate directly.
+    if _is_public_ip(hostname):
+        _DNS_SAFE_HOST_CACHE[hostname] = True
+        return
+    try:
+        ipaddress.ip_address(hostname)
+        raise HTTPException(403, "Private or non-public target IP is blocked.")
+    except ValueError:
+        pass  # normal DNS name
+
+    def _resolve_ips() -> set[str]:
+        infos = socket.getaddrinfo(hostname, None, type=socket.SOCK_STREAM)
+        return {info[4][0] for info in infos if info and info[4]}
+
+    try:
+        resolved_ips = await asyncio.to_thread(_resolve_ips)
+    except socket.gaierror:
+        raise HTTPException(403, "Could not resolve target host.")
+
+    if not resolved_ips:
+        raise HTTPException(403, "Could not resolve target host.")
+    if not all(_is_public_ip(ip) for ip in resolved_ips):
+        raise HTTPException(403, "Target host resolves to a private/internal IP.")
+
+    _DNS_SAFE_HOST_CACHE[hostname] = True
+
+
+async def _safe_get_with_redirects(
+    client: httpx.AsyncClient,
+    start_url: str,
+    *,
+    stream: bool = False,
+) -> httpx.Response:
+    """Perform a GET with redirect validation at every hop."""
+    current_url = start_url
+
+    for _ in range(_MAX_REDIRECTS + 1):
+        await _assert_safe_remote_url(current_url)
+
+        request = client.build_request(
+            "GET",
+            current_url,
+            headers=_build_source_headers(current_url),
+        )
+        response = await client.send(request, stream=stream, follow_redirects=False)
+
+        if response.status_code in {301, 302, 303, 307, 308}:
+            location = response.headers.get("location")
+            await response.aclose()
+
+            if not location:
+                raise HTTPException(502, "Remote redirect missing Location header.")
+
+            current_url = urljoin(str(response.url), location)
+            continue
+
+        return response
+
+    raise HTTPException(502, "Too many redirects from remote host.")
+
+
 def _build_source_headers(decoded_url: str) -> dict[str, str]:
     """Build source-aware headers so CDNs accept proxied requests."""
-    host = (urlparse(decoded_url).netloc or "").lower()
+    host = (urlparse(decoded_url).hostname or "").lower()
 
     referer = "https://www.youtube.com/"
     origin = "https://www.youtube.com"
@@ -135,19 +258,26 @@ async def _download_hls(decoded_url: str, filename: str) -> StreamingResponse:
     safe_filename = re.sub(r'[^\w \-.]', '', filename.replace('\n', ' ').replace('\r', ''))[:100].strip() or "download"
 
     async with httpx.AsyncClient(
-        follow_redirects=True, timeout=60.0, headers=_build_source_headers(decoded_url),
+        follow_redirects=False,
+        timeout=60.0,
     ) as client:
-        # Fetch the m3u8 playlist
-        resp = await client.get(decoded_url)
-        if resp.status_code != 200:
-            raise HTTPException(502, f"Failed to fetch HLS playlist: {resp.status_code}")
+        # Fetch the m3u8 playlist with safe redirect validation.
+        resp = await _safe_get_with_redirects(client, decoded_url)
+        playlist_base_url = str(resp.url)
+        try:
+            resp.raise_for_status()
+            playlist_text = resp.text
+        except httpx.HTTPStatusError as exc:
+            raise HTTPException(502, f"Failed to fetch HLS playlist: {exc.response.status_code}")
+        finally:
+            await resp.aclose()
 
         # Parse segment URLs from the m3u8
         segment_urls: list[str] = []
-        for line in resp.text.splitlines():
+        for line in playlist_text.splitlines():
             line = line.strip()
             if line and not line.startswith("#"):
-                segment_urls.append(line)
+                segment_urls.append(urljoin(playlist_base_url, line))
 
         if not segment_urls:
             raise HTTPException(502, "HLS playlist contained no segments")
@@ -173,14 +303,17 @@ async def _download_hls(decoded_url: str, filename: str) -> StreamingResponse:
 
     async def stream_segments():
         async with httpx.AsyncClient(
-            follow_redirects=True, timeout=60.0,
-            headers=_build_source_headers(decoded_url),
+            follow_redirects=False,
+            timeout=60.0,
         ) as client:
             for seg_url in segment_urls:
                 try:
-                    seg_resp = await client.get(seg_url)
-                    if seg_resp.status_code == 200:
-                        yield seg_resp.content
+                    seg_resp = await _safe_get_with_redirects(client, seg_url)
+                    try:
+                        if seg_resp.status_code == 200:
+                            yield seg_resp.content
+                    finally:
+                        await seg_resp.aclose()
                 except Exception:
                     continue  # skip failed segments
 
@@ -200,12 +333,7 @@ async def proxy_download(
 
     decoded_url = unquote(url)
 
-    # Basic SSRF protection: only allow known CDN hosts
-    if not _ALLOWED_HOSTS_RE.search(decoded_url):
-        raise HTTPException(
-            403,
-            "URL host is not in the allow-list. Only supported platform CDN URLs are permitted.",
-        )
+    await _assert_safe_remote_url(decoded_url)
 
     # ── HLS / m3u8 handling ─────────────────────────────────────
     # If the URL is an m3u8 playlist, fetch all segments and stream them
@@ -213,11 +341,10 @@ async def proxy_download(
     if ".m3u8" in decoded_url or "playlist.m3u8" in decoded_url:
         return await _download_hls(decoded_url, filename)
 
-    client = httpx.AsyncClient(follow_redirects=True, timeout=300.0)
+    client = httpx.AsyncClient(follow_redirects=False, timeout=300.0)
 
     try:
-        req = client.build_request("GET", decoded_url, headers=_build_source_headers(decoded_url))
-        resp = await client.send(req, stream=True)
+        resp = await _safe_get_with_redirects(client, decoded_url, stream=True)
         resp.raise_for_status()
     except httpx.HTTPStatusError as exc:
         await client.aclose()
@@ -237,7 +364,7 @@ async def proxy_download(
             break
     # Also check URL extension as fallback if MIME was unknown
     if ext == "bin":
-        url_path = urlparse(decoded_url).path.lower()
+        url_path = urlparse(str(resp.url)).path.lower()
         for candidate_ext in _MIME_MAP:
             if url_path.endswith(f".{candidate_ext}"):
                 ext = candidate_ext
@@ -278,17 +405,12 @@ async def proxy_stream(
 
     decoded_url = unquote(url)
 
-    if not _ALLOWED_HOSTS_RE.search(decoded_url):
-        raise HTTPException(
-            403,
-            "URL host is not in the allow-list. Only supported platform CDN URLs are permitted.",
-        )
+    await _assert_safe_remote_url(decoded_url)
 
-    client = httpx.AsyncClient(follow_redirects=True, timeout=300.0)
+    client = httpx.AsyncClient(follow_redirects=False, timeout=300.0)
 
     try:
-        req = client.build_request("GET", decoded_url, headers=_build_source_headers(decoded_url))
-        resp = await client.send(req, stream=True)
+        resp = await _safe_get_with_redirects(client, decoded_url, stream=True)
         resp.raise_for_status()
     except httpx.HTTPStatusError as exc:
         await client.aclose()
@@ -350,11 +472,9 @@ async def merge_download(
     if len(url_list) > 200:
         raise HTTPException(400, "Too many segments (max 200)")
 
-    # Validate all URLs against the allow-list
-    for u in url_list:
-        decoded = unquote(u)
-        if not _ALLOWED_HOSTS_RE.search(decoded):
-            raise HTTPException(403, "One or more URLs are not in the allow-list")
+    decoded_urls = [unquote(u) for u in url_list]
+    for decoded in decoded_urls:
+        await _assert_safe_remote_url(decoded)
 
     ffmpeg = _get_ffmpeg_path()
     tmp_dir = tempfile.mkdtemp(prefix="merge_")
@@ -363,8 +483,7 @@ async def merge_download(
         # Download all segments in parallel (limited concurrency)
         sem = asyncio.Semaphore(6)
 
-        async def download_segment(idx: int, u: str) -> str:
-            decoded = unquote(u)
+        async def download_segment(idx: int, decoded: str) -> str:
             ext = "mp4"
             url_path = urlparse(decoded).path.lower()
             if url_path.endswith(".jpg") or url_path.endswith(".jpeg"):
@@ -374,16 +493,19 @@ async def merge_download(
             seg_path = os.path.join(tmp_dir, f"seg_{idx:04d}.{ext}")
             async with sem:
                 async with httpx.AsyncClient(
-                    follow_redirects=True, timeout=60.0,
-                    headers=_build_source_headers(decoded),
+                    follow_redirects=False,
+                    timeout=60.0,
                 ) as client:
-                    resp = await client.get(decoded)
-                    resp.raise_for_status()
-                    with open(seg_path, "wb") as f:
-                        f.write(resp.content)
+                    resp = await _safe_get_with_redirects(client, decoded)
+                    try:
+                        resp.raise_for_status()
+                        with open(seg_path, "wb") as f:
+                            f.write(resp.content)
+                    finally:
+                        await resp.aclose()
             return seg_path
 
-        tasks = [download_segment(i, u) for i, u in enumerate(url_list)]
+        tasks = [download_segment(i, u) for i, u in enumerate(decoded_urls)]
         segment_paths = await asyncio.gather(*tasks)
 
         # Convert images to short videos so they can be concatenated

@@ -35,35 +35,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const relatedPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 16);
   const popularPosts = relatedPosts.slice(0, 4);
 
-  const featureImage =
-    "https://www.figma.com/api/mcp/asset/be1855f9-e075-4571-8c54-2cb11cef0793";
-
-  const popularImages = [
-    "https://www.figma.com/api/mcp/asset/3dfaffc9-f58d-4e82-8f57-2fd2b25dcc9e",
-    "https://www.figma.com/api/mcp/asset/5a24dd78-eab7-4952-ba84-83f7915a873a",
-    "https://www.figma.com/api/mcp/asset/40b0d368-e91b-44f1-8245-b1dd73cfc0f8",
-    "https://www.figma.com/api/mcp/asset/a8da67a7-156f-4c95-b325-38fc709a3b3f",
-  ];
-
-  const relatedImages = [
-    "https://www.figma.com/api/mcp/asset/d18ca799-013a-4c30-a64c-0963615ecca0",
-    "https://www.figma.com/api/mcp/asset/80204ce4-71d8-4569-b1e5-f54a1fc24f30",
-    "https://www.figma.com/api/mcp/asset/4b4e21af-2964-4ef4-acfe-2af848ddb61c",
-    "https://www.figma.com/api/mcp/asset/1875b254-8dfd-46a3-a355-94ae255552eb",
-    "https://www.figma.com/api/mcp/asset/993f486c-95e8-4904-811a-63d13e70af93",
-    "https://www.figma.com/api/mcp/asset/6f27501a-7e0a-417a-a077-c559c3b11452",
-    "https://www.figma.com/api/mcp/asset/f6b9f210-4748-42da-8c0e-afd182bf72cb",
-    "https://www.figma.com/api/mcp/asset/56a617fe-e0e1-40fc-b88e-4039ef05b203",
-    "https://www.figma.com/api/mcp/asset/53381dc8-b0b1-4711-9312-c15cc5129efb",
-    "https://www.figma.com/api/mcp/asset/1dd13cb6-cfe7-4185-b4e1-4247cc5ce7cc",
-    "https://www.figma.com/api/mcp/asset/100b9f41-a683-4d7a-bebe-19f9adc0bb40",
-    "https://www.figma.com/api/mcp/asset/056e2e8b-79ca-41f6-81a6-d2e5c4eafdc4",
-    "https://www.figma.com/api/mcp/asset/7c33ca03-0a03-4324-a13c-88902344a41d",
-    "https://www.figma.com/api/mcp/asset/b0420424-d881-4427-a96b-feff703b0dc3",
-    "https://www.figma.com/api/mcp/asset/4aa554a1-bb7b-4bc4-9a9d-99394a21226b",
-    "https://www.figma.com/api/mcp/asset/1701df57-14b6-47da-98c8-1d89de779f61",
-  ];
-
   const articleParagraphs = [
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque nibh nibh, at maximus ante fermentum sit amet. Pellentesque commodo lacus at sodales sodales.",
     "Quisque sagittis orci ut diam condimentum, vel euismod erat placerat. In iaculis arcu eros, eget tempus orci facilisis id. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum auctor ornare leo, non suscipit magna interdum eu.",
@@ -97,7 +68,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
         <div className="mt-8 h-[260px] md:h-[420px] lg:h-[594px] w-full overflow-hidden">
           <img
-            src={featureImage}
+            src={post.image}
             alt="Blog feature"
             className="h-full w-full object-cover"
           />
@@ -126,7 +97,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   className={`flex items-center gap-3 ${index < popularPosts.length - 1 ? "pb-5 border-b border-[#ccc]" : ""}`}
                 >
                   <img
-                    src={popularImages[index]}
+                    src={popularPost.image}
                     alt={popularPost.title}
                     className="h-20 w-20 rounded-lg object-cover"
                   />
@@ -159,7 +130,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 title={relatedPost.title}
                 description={relatedPost.description}
                 date={relatedPost.date}
-                image={relatedImages[index] ?? relatedPost.image}
+                image={relatedPost.image}
               />
             ))}
           </div>

@@ -38,10 +38,25 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# In development, allow common local/LAN origins in addition to explicit CORS_ORIGINS.
+# This prevents local host/IP variations from failing browser preflight requests.
+_DEV_LOCAL_ORIGIN_REGEX = (
+    r"^https?://("
+    r"localhost|127\.0\.0\.1|0\.0\.0\.0|"
+    r"10(?:\.\d{1,3}){3}|"
+    r"192\.168(?:\.\d{1,3}){2}|"
+    r"172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}|"
+    r"[a-zA-Z0-9-]+"
+    r")(?:\:\d+)?$"
+)
+
+allow_origin_regex = _DEV_LOCAL_ORIGIN_REGEX if settings.APP_ENV.lower() == "development" else None
+
 # ── CORS ─────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=allow_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -21,7 +21,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on November 14, 2022",
     readTime: "2 min read",
     category: "Artificial Intelligence",
-    image: "/blog/hero.jpg",
+    image: "/blog/hero.svg",
     sections: [
       {
         heading: "Exploring Generative AI in Content Creation",
@@ -84,7 +84,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "8 min read",
     category: "Social Media",
-    image: "/blog/card-1.jpg",
+    image: "/blog/card-1.svg",
     sections: [],
   },
   {
@@ -95,7 +95,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "6 min read",
     category: "Content Strategy",
-    image: "/blog/card-2.jpg",
+    image: "/blog/card-2.svg",
     sections: [],
   },
   {
@@ -106,7 +106,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "7 min read",
     category: "Design",
-    image: "/blog/card-3.jpg",
+    image: "/blog/card-3.svg",
     sections: [],
   },
   {
@@ -117,7 +117,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "5 min read",
     category: "AI",
-    image: "/blog/card-4.jpg",
+    image: "/blog/card-4.svg",
     sections: [],
   },
   {
@@ -128,7 +128,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "9 min read",
     category: "Growth",
-    image: "/blog/card-5.jpg",
+    image: "/blog/card-5.svg",
     sections: [],
   },
   {
@@ -139,7 +139,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "4 min read",
     category: "Automation",
-    image: "/blog/card-6.jpg",
+    image: "/blog/card-6.svg",
     sections: [],
   },
   {
@@ -150,7 +150,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "6 min read",
     category: "UX",
-    image: "/blog/card-7.jpg",
+    image: "/blog/card-7.svg",
     sections: [],
   },
   {
@@ -161,7 +161,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "7 min read",
     category: "Marketing",
-    image: "/blog/card-8.jpg",
+    image: "/blog/card-8.svg",
     sections: [],
   },
   {
@@ -172,7 +172,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "5 min read",
     category: "Video",
-    image: "/blog/card-9.jpg",
+    image: "/blog/card-9.svg",
     sections: [],
   },
   {
@@ -183,7 +183,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "8 min read",
     category: "SEO",
-    image: "/blog/card-10.jpg",
+    image: "/blog/card-10.svg",
     sections: [],
   },
   {
@@ -194,7 +194,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "6 min read",
     category: "Analytics",
-    image: "/blog/card-11.jpg",
+    image: "/blog/card-11.svg",
     sections: [],
   },
   {
@@ -205,7 +205,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "7 min read",
     category: "Community",
-    image: "/blog/card-12.jpg",
+    image: "/blog/card-12.svg",
     sections: [],
   },
   {
@@ -216,7 +216,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "5 min read",
     category: "Productivity",
-    image: "/blog/card-13.jpg",
+    image: "/blog/card-13.svg",
     sections: [],
   },
   {
@@ -227,7 +227,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "6 min read",
     category: "Remote Work",
-    image: "/blog/card-14.jpg",
+    image: "/blog/card-14.svg",
     sections: [],
   },
   {
@@ -238,7 +238,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "10 min read",
     category: "Technology",
-    image: "/blog/card-15.jpg",
+    image: "/blog/card-15.svg",
     sections: [],
   },
   {
@@ -249,7 +249,7 @@ export const blogPosts: BlogPost[] = [
     date: "Published on 10 Dec, 2025",
     readTime: "8 min read",
     category: "Branding",
-    image: "/blog/card-16.jpg",
+    image: "/blog/card-16.svg",
     sections: [],
   },
 ];
