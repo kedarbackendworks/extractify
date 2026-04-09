@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 from beanie import Document
 from pydantic import BaseModel, EmailStr, Field
+from pymongo import DESCENDING, IndexModel
 
 class ReviewCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
@@ -18,3 +19,6 @@ class Review(Document):
 
     class Settings:
         name = "reviews" # MongoDB collection name
+        indexes = [
+            IndexModel([("created_at", DESCENDING)]),
+        ]

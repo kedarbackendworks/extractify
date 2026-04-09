@@ -8,6 +8,7 @@ from typing import Optional, List
 
 from beanie import Document
 from pydantic import BaseModel, Field, HttpUrl
+from pymongo import ASCENDING, DESCENDING, IndexModel
 
 
 class JobStatus(str, Enum):
@@ -78,6 +79,17 @@ class Job(Document):
     class Settings:
         name = "jobs"                               # MongoDB collection name
         use_state_management = True
+        indexes = [
+            # Recent jobs by platform (platform filter + newest first)
+            IndexModel([("platform", ASCENDING), ("created_at", DESCENDING)]),
+            # Recent jobs by user; partial index avoids bloating on null user_id rows
+            IndexModel(
+                [("user_id", ASCENDING), ("created_at", DESCENDING)],
+                partialFilterExpression={"user_id": {"$type": "string"}},
+            ),
+            # Global newest jobs / time-window queries
+            IndexModel([("created_at", DESCENDING)]),
+        ]
 
     class Config:
         json_schema_extra = {
